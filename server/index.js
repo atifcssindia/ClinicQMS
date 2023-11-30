@@ -1,5 +1,5 @@
 const express = require('express');
-const { insertPatient, insertAppointment } = require('./db');
+const { insertPatient, insertAppointment, findPatientByContactNumber } = require('./db');
 const app = express();
 const port = process.env.PORT || 5001;
 
@@ -9,10 +9,14 @@ app.post('/register', async (req, res) => {
   try {
     const { patient_name, patient_age, patient_weight, patient_contact_number } = req.body;
 
-    // Insert new patient
-    const patient = await insertPatient(patient_name, patient_age, patient_weight, patient_contact_number);
+    // Check if patient already exists
+    let patient = await findPatientByContactNumber(patient_contact_number);
 
-    // Insert new appointment
+    if (!patient) {
+      // If patient doesn't exist, create new patient
+      patient = await insertPatient(patient_name, patient_age, patient_weight, patient_contact_number);
+    }
+    // Create a new appointment
     const appointment = await insertAppointment(patient.patient_id);
 
     res.status(201).json({ patient, appointment });
