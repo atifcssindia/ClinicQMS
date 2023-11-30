@@ -1,9 +1,15 @@
 const express = require('express');
 const { insertPatient, insertAppointment, findPatientByContactNumber } = require('./db');
 const app = express();
+const cors = require('cors');
 const port = process.env.PORT || 5001;
+app.use(cors());
 
-app.use(express.json()); // Middleware to parse JSON bodies
+app.use(cors({
+  origin: 'http://localhost:3000'
+}));
+
+app.use(express.json());
 
 app.post('/register', async (req, res) => {
   try {

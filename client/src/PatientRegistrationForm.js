@@ -25,10 +25,39 @@ const PatientRegistrationForm = () => {
         setContactNumber(event.target.value);
     };
 
-    const handleSubmit = (event) => {
+    const handleSubmit = async (event) => {
         event.preventDefault(); // Prevent the default form submit action
-        console.log({ name, age, weight, contactNumber });
-        // Here you will later add the POST request to your server
+
+        const patientData = {
+            patient_name: name,
+            patient_age: age,
+            patient_weight: weight,
+            patient_contact_number: contactNumber
+        };
+
+        try {
+            const response = await fetch('http://localhost:5001/register', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(patientData)
+            });
+    
+            if (response.ok) {
+                const data = await response.json();
+                console.log('Registration successful:', data);
+                // Additional logic upon successful registration, like redirecting or showing a success message
+            } else {
+                // Handle server errors (response not OK)
+                console.error('Registration failed:', response.status, response.statusText);
+                // Show error message to the user, if appropriate
+            }
+        } catch (error) {
+            // Handle network errors
+            console.error('Network error:', error);
+            // Show error message to the user, if appropriate
+        }
     };
     
     return (
