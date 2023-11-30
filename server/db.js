@@ -5,7 +5,7 @@ const pool = new Pool({
     host: process.env.PGHOST,
     database: process.env.PGDATABASE,
     password: process.env.PGPASSWORD,
-    port: process.env.PGPORT || 5432, // Default to 5432 if DB_PORT is not set
+    port: process.env.PGPORT
   });
 
 const insertPatient = async (patientName, patientAge, patientWeight, patientContactNumber) => {
