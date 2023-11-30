@@ -26,7 +26,7 @@ const PatientRegistrationForm = () => {
     };
 
     const handleSubmit = async (event) => {
-        event.preventDefault(); // Prevent the default form submit action
+        event.preventDefault(); // Preventt the default form submit action
 
         const patientData = {
             patient_name: name,
