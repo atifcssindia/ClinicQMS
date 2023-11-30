@@ -1,5 +1,5 @@
 const express = require('express');
-const { insertPatient, insertAppointment, findPatientByContactNumber } = require('./db');
+const { insertPatient, insertAppointment, findPatientByContactNumber, insertDoctor, updateDoctorQRCode } = require('./db');
 const app = express();
 const cors = require('cors');
 const port = process.env.PORT || 5001;
@@ -31,6 +31,23 @@ app.post('/register', async (req, res) => {
     res.status(500).send('Server error');
   }
 });
+
+app.post('/registerDoctor', async (req, res) => {
+  try {
+      const { doctor_name, clinic_name } = req.body;
+      let doctor = await insertDoctor(doctor_name, clinic_name);
+
+      // Update QR code URL with doctor_id (this is a workaround)
+      doctor.qr_code_url += doctor.doctor_id;
+      await updateDoctorQRCode(doctor.doctor_id, doctor.qr_code_url);
+
+      res.status(201).json({ doctor });
+  } catch (error) {
+      console.error(error);
+      res.status(500).send('Server error');
+  }
+});
+
 
 app.get('/', (req, res) => {
   res.send('Hello, VitalX!');

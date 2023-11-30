@@ -30,4 +30,23 @@ const findPatientByContactNumber = async (contactNumber) => {
     return res.rows[0]; // Returns undefined if no patient is found
 };
 
-module.exports = { insertPatient, insertAppointment, findPatientByContactNumber};
+const updateDoctorQRCode = async (doctorId, qrCodeUrl) => {
+    await pool.query('UPDATE Doctor SET qr_code_url = $1 WHERE doctor_id = $2', [qrCodeUrl, doctorId]);
+  };
+
+const insertDoctor = async (doctorName, clinicName) => {
+    // Generate QR Code URL
+    // For simplicity, assuming doctor_id is known after insert, which is not usually the case
+    // You would normally need to retrieve the doctor_id after insert
+    const qrCodeURL = `http://localhost:3000/doctor/`; // Append doctor_id after insertion
+
+    const res = await pool.query(
+        'INSERT INTO Doctor(doctor_name, clinic_name, qr_code_url) VALUES($1, $2, $3) RETURNING *',
+        [doctorName, clinicName, qrCodeURL]
+    );
+
+    return res.rows[0];
+};
+
+module.exports = { insertPatient, insertAppointment, findPatientByContactNumber, insertDoctor, updateDoctorQRCode };
+
