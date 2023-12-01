@@ -1,14 +1,20 @@
-import React from 'react';
-import { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { TextField, Button } from '@mui/material';
 
 const PatientRegistrationForm = () => {
-
     const [name, setName] = useState('');
     const [age, setAge] = useState('');
     const [weight, setWeight] = useState('');
     const [contactNumber, setContactNumber] = useState('');
-    
+    const [doctorId, setDoctorId] = useState(null);
+
+    useEffect(() => {
+        // Extract doctorId from URL query parameters
+        const query = new URLSearchParams(window.location.search);
+        const doctorId = query.get('doctorId');
+        setDoctorId(doctorId);
+    }, []);
+
     const handleNameChange = (event) => {
         setName(event.target.value);
     };
@@ -32,7 +38,8 @@ const PatientRegistrationForm = () => {
             patient_name: name,
             patient_age: age,
             patient_weight: weight,
-            patient_contact_number: contactNumber
+            patient_contact_number: contactNumber,
+            doctor_id: doctorId
         };
 
         try {
@@ -59,6 +66,8 @@ const PatientRegistrationForm = () => {
             // Show error message to the user, if appropriate
         }
     };
+
+    
     
     return (
         <form onSubmit={handleSubmit}>

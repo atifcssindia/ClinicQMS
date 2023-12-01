@@ -17,10 +17,21 @@ const insertPatient = async (patientName, patientAge, patientWeight, patientCont
   return res.rows[0];
 };
 
-const insertAppointment = async (patientId) => {
+const getNextAppointmentNumber = async (doctorId) => {
+  const currentDate = new Date().toISOString().slice(0, 10); // Format as YYYY-MM-DD
   const res = await pool.query(
-    'INSERT INTO Appointment(patient_id, date_time, status) VALUES($1, NOW(), 0) RETURNING *',
-    [patientId]
+    'SELECT COUNT(*) FROM Appointment WHERE doctor_id = $1 AND date_time::date = $2',
+    [doctorId, currentDate]
+  );
+  return parseInt(res.rows[0].count) + 1; // Next appointment number
+};
+
+
+const insertAppointment = async (patientId, doctorId) => {
+  const appointmentNumber = await getNextAppointmentNumber(doctorId);
+  const res = await pool.query(
+    'INSERT INTO Appointment(patient_id, doctor_id, date_time, status, appointment_number) VALUES($1, $2, NOW(), 0, $3) RETURNING *',
+    [patientId, doctorId, appointmentNumber]
   );
   return res.rows[0];
 };

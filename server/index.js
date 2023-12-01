@@ -17,8 +17,8 @@ app.use(express.json());
 
 app.post('/register', async (req, res) => {
   try {
-    const { patient_name, patient_age, patient_weight, patient_contact_number } = req.body;
-
+    const { patient_name, patient_age, patient_weight, patient_contact_number, doctor_id } = req.body;
+    console.log("Request body:", req.body); // For debugging
     // Check if patient already exists
     let patient = await findPatientByContactNumber(patient_contact_number);
 
@@ -26,8 +26,9 @@ app.post('/register', async (req, res) => {
       // If patient doesn't exist, create new patient
       patient = await insertPatient(patient_name, patient_age, patient_weight, patient_contact_number);
     }
-    // Create a new appointment
-    const appointment = await insertAppointment(patient.patient_id);
+
+    // Create a new appointment with doctorId
+    const appointment = await insertAppointment(patient.patient_id, doctor_id);
 
     res.status(201).json({ patient, appointment });
   } catch (error) {
