@@ -1,63 +1,58 @@
-# VitalX - Clinic Queue Management System
+# VitalX Clinic Queue Management System
 
-VitalX is a simple queue management system designed for small clinics to streamline their patient handling processes.
+## Description
+VitalX is a clinic queue management system designed to streamline the process of patient registration and appointment scheduling in clinics. This system provides a simple and efficient way for patients to register upon arrival by scanning a QR code and tracks appointment queues in real-time.
+
+## Features
+- Doctor Registration: Allows clinic staff to register doctors and generate a unique QR code for each.
+- Patient Registration: Patients can register by scanning the doctor's QR code and entering their details.
+- Real-time Queue Management: Each patient is assigned an appointment number that resets daily.
+
+## Technologies Used
+- React
+- Node.js
+- Express
+- PostgreSQL
+- Material UI
 
 ## Getting Started
 
-These instructions will get you a copy of the project up and running on your local machine for development and testing purposes.
-
 ### Prerequisites
-
-You'll need the following installed on your system:
-
 - Node.js
-- npm (comes with Node.js)
+- npm
 - PostgreSQL
 
 ### Installation
+1. Clone the repository: git clone https://github.com/your-username/vitalx.git
+2. Navigate to the project directory: cd vitalx
+3. npm install: Install dependencies for the server:
+4. Navigate to the client directory and install dependencies:
+cd client, npm install
 
-Follow these steps to get your development environment running:
+5. Create a `.env` file in the server directory with the following contents (update values according to your environment):
+PGUSER=yourPostgresUsername
+PGHOST=localhost
+PGDATABASE=yourDatabaseName
+PGPASSWORD=yourDatabasePassword
+PGPORT=5432
 
-1. Clone the repository:
-
-```bash
-git clone https://github.com/yashitgarg/VitalX.git
-
-
-2.  Install dependencies and start server
-cd VitalX
-cd server
-npm install
+6. Start the backend server: npm start
+7. In a new terminal, navigate to the client directory and start the React app:
 npm start
 
-The server should now be running on http://localhost:5001.
-
-3. Open a new terminal tab/window and navigate to the client directory:
-cd client
-npm install
-npm start
-The client should now be running on http://localhost:3000.
 
 
-Setting Up the Database
-Ensure you have PostgreSQL running and create a database named data. You will also need to set up the required tables.
-Create a .env file in the server directory and add the following variables:
+## Usage
+- **To Register a Doctor**: Navigate to `/doctor` and enter the doctor's name and clinic name.
+- **To Register as a Patient**: Scan the QR code provided at the clinic, fill in your details, and submit the form. Your queue number will be displayed.
 
-DB_USER=yourPostgresUsername
-DB_PASS=yourPostgresPassword
-DB_HOST=localhost
-DB_PORT=5432
-DB_DATABASE=data
-[Replace the values with your actual PostgreSQL credentials.]
+## Contributing
+Contributions are welcome! Please feel free to submit a pull request.
 
-Contributing
-To contribute to VitalX, follow these steps:
+## License
+[MIT](https://choosealicense.com/licenses/mit/)
 
-Fork the repository.
-Create a branch: git checkout -b <branch_name>.
-Make your changes and commit them: git commit -m '<commit_message>'
-Push to the original branch: git push origin <project_name>/<location>
-Create the pull request.
+
 
 
 
