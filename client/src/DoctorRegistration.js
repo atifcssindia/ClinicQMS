@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import QRCode from 'qrcode.react';
+import { TextField, Button, Card, CardContent, Typography } from '@mui/material';
 
 const DoctorRegistration = () => {
   const [doctorName, setDoctorName] = useState('');
@@ -17,30 +18,45 @@ const DoctorRegistration = () => {
         body: JSON.stringify({ doctor_name: doctorName, clinic_name: clinicName }),
       });
       const data = await response.json();
-      setQrCodeUrl(data.doctor.qr_code_url); // Use the URL from the response
+      setQrCodeUrl(data.doctor.qr_code_url);
     } catch (error) {
       console.error('Registration failed:', error);
     }
   };
 
   return (
-    <div>
-      <form onSubmit={handleRegister}>
-        <input
-          type="text"
+    <div style={{ padding: '20px' }}>
+      <form onSubmit={handleRegister} style={{ marginBottom: '20px' }}>
+        <TextField
+          label="Doctor Name"
+          variant="outlined"
+          fullWidth
+          margin="normal"
           value={doctorName}
           onChange={(e) => setDoctorName(e.target.value)}
-          placeholder="Doctor Name"
         />
-        <input
-          type="text"
+        <TextField
+          label="Clinic Name"
+          variant="outlined"
+          fullWidth
+          margin="normal"
           value={clinicName}
           onChange={(e) => setClinicName(e.target.value)}
-          placeholder="Clinic Name"
         />
-        <button type="submit">Register</button>
+        <Button type="submit" variant="contained" color="primary">
+          Register
+        </Button>
       </form>
-      {qrCodeUrl && <QRCode value={qrCodeUrl} />}
+      {qrCodeUrl && (
+        <Card>
+          <CardContent>
+            <Typography variant="h6" gutterBottom>
+              Your QR Code
+            </Typography>
+            <QRCode value={qrCodeUrl} />
+          </CardContent>
+        </Card>
+      )}
     </div>
   );
 };
