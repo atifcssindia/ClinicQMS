@@ -23,8 +23,10 @@ const getNextAppointmentNumber = async (doctorId) => {
     'SELECT COUNT(*) FROM Appointment WHERE doctor_id = $1 AND date_time::date = $2',
     [doctorId, currentDate]
   );
-  return parseInt(res.rows[0].count) + 1; // Next appointment number
+  const nextNumber = parseInt(res.rows[0].count) + 1;
+  return nextNumber;
 };
+
 
 
 const insertAppointment = async (patientId, doctorId) => {
@@ -35,6 +37,7 @@ const insertAppointment = async (patientId, doctorId) => {
   );
   return res.rows[0];
 };
+
 
 const findPatientByContactNumber = async (contactNumber) => {
   const res = await pool.query(

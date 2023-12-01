@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { TextField, Button } from '@mui/material';
+import { TextField, Button, Card, CardContent, Typography } from '@mui/material';
 
 const PatientRegistrationForm = () => {
     const [name, setName] = useState('');
@@ -7,6 +7,8 @@ const PatientRegistrationForm = () => {
     const [weight, setWeight] = useState('');
     const [contactNumber, setContactNumber] = useState('');
     const [doctorId, setDoctorId] = useState(null);
+    const [appointmentNumber, setAppointmentNumber] = useState(null);
+
 
     useEffect(() => {
         // Extract doctorId from URL query parameters
@@ -53,6 +55,7 @@ const PatientRegistrationForm = () => {
     
             if (response.ok) {
                 const data = await response.json();
+                setAppointmentNumber(data.appointment.appointment_number); // Set the appointment number here
                 console.log('Registration successful:', data);
                 // Additional logic upon successful registration, like redirecting or showing a success message
             } else {
@@ -70,6 +73,7 @@ const PatientRegistrationForm = () => {
     
     
     return (
+        <div>
         <form onSubmit={handleSubmit}>
             <TextField
                 label="Name"
@@ -107,6 +111,23 @@ const PatientRegistrationForm = () => {
                 Register
             </Button>
         </form>
+        {appointmentNumber && (
+                <Card style={{ marginTop: 20 }}>
+                    <CardContent>
+                        <Typography variant="h5" component="div">
+                            Appointment Number
+                        </Typography>
+                        <Typography variant="h4" color="primary">
+                            {appointmentNumber}
+                        </Typography>
+                        <Typography variant="body2">
+                            Please wait for your turn.
+                        </Typography>
+                    </CardContent>
+                </Card>
+            )}
+        </div>
+        
     );
     
 };
