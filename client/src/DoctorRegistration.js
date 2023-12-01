@@ -9,7 +9,6 @@ const DoctorRegistration = () => {
   const handleRegister = async (event) => {
     event.preventDefault();
     try {
-        console.log('lo: ', process.env.REACT_APP_API_URL);
       const response = await fetch(`${process.env.REACT_APP_API_URL}/registerDoctor`, {
         method: 'POST',
         headers: {
@@ -18,7 +17,7 @@ const DoctorRegistration = () => {
         body: JSON.stringify({ doctor_name: doctorName, clinic_name: clinicName }),
       });
       const data = await response.json();
-      setQrCodeUrl(data.doctor.qr_code_url); // Make sure to use the exact key returned from your backend
+      setQrCodeUrl(data.doctor.qr_code_url); // Use the URL from the response
     } catch (error) {
       console.error('Registration failed:', error);
     }

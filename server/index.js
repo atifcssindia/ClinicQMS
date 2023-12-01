@@ -38,19 +38,21 @@ app.post('/register', async (req, res) => {
 
 app.post('/registerDoctor', async (req, res) => {
   try {
-      const { doctor_name, clinic_name } = req.body;
-      let doctor = await insertDoctor(doctor_name, clinic_name);
+    const { doctor_name, clinic_name } = req.body;
+    let doctor = await insertDoctor(doctor_name, clinic_name);
 
-      // Update QR code URL with doctor_id (this is a workaround)
-      doctor.qr_code_url += doctor.doctor_id;
-      await updateDoctorQRCode(doctor.doctor_id, doctor.qr_code_url);
+    // Generate QR code URL with doctor_id
+    const qrCodeURL = `https://thriving-bonbon-27d691.netlify.app/?doctorId=${doctor.doctor_id}`;
+    await updateDoctorQRCode(doctor.doctor_id, qrCodeURL);
 
-      res.status(201).json({ doctor });
+    // Send updated doctor info, including QR code URL
+    res.status(201).json({ doctor: {...doctor, qr_code_url: qrCodeURL} });
   } catch (error) {
-      console.error(error);
-      res.status(500).send('Server error');
+    console.error(error);
+    res.status(500).send('Server error');
   }
 });
+
 
 
 app.get('/', (req, res) => {

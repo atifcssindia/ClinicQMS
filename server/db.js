@@ -2,12 +2,12 @@ const { Pool } = require('pg');
 require('dotenv').config();
 
 const pool = new Pool({
-    user: process.env.PGUSER,
-    host: process.env.PGHOST,
-    database: process.env.PGDATABASE,
-    password: process.env.PGPASSWORD,
-    port: process.env.PGPORT
-  });
+  user: process.env.PGUSER,
+  host: process.env.PGHOST,
+  database: process.env.PGDATABASE,
+  password: process.env.PGPASSWORD,
+  port: process.env.PGPORT
+});
 
 const insertPatient = async (patientName, patientAge, patientWeight, patientContactNumber) => {
   const res = await pool.query(
@@ -26,31 +26,32 @@ const insertAppointment = async (patientId) => {
 };
 
 const findPatientByContactNumber = async (contactNumber) => {
-    const res = await pool.query(
-      'SELECT * FROM Patient WHERE patient_contact_number = $1',
-      [contactNumber]
-    );
-    return res.rows[0]; // Returns undefined if no patient is found
+  const res = await pool.query(
+    'SELECT * FROM Patient WHERE patient_contact_number = $1',
+    [contactNumber]
+  );
+  return res.rows[0]; // Returns undefined if no patient is found
 };
 
 const updateDoctorQRCode = async (doctorId, qrCodeUrl) => {
-    await pool.query('UPDATE Doctor SET qr_code_url = $1 WHERE doctor_id = $2', [qrCodeUrl, doctorId]);
-  };
+  await pool.query('UPDATE Doctor SET qr_code_url = $1 WHERE doctor_id = $2', [qrCodeUrl, doctorId]);
+};
 
 const insertDoctor = async (doctorName, clinicName) => {
-    // Generate QR Code URL
-    // For simplicity, assuming doctor_id is known after insert, which is not usually the case
-    // You would normally need to retrieve the doctor_id after insert
-    console.log('ye hai pool: ', pool);
-    const qrCodeURL = `http://localhost:3000/doctor/`; // Append doctor_id after insertion
+  // Insert doctor without QR code URL initially
+  const insertRes = await pool.query(
+    'INSERT INTO Doctor(doctor_name, clinic_name) VALUES($1, $2) RETURNING doctor_id',
+    [doctorName, clinicName]
+  );
+  const doctorId = insertRes.rows[0].doctor_id;
 
-    const res = await pool.query(
-        'INSERT INTO Doctor(doctor_name, clinic_name, qr_code_url) VALUES($1, $2, $3) RETURNING *',
-        [doctorName, clinicName, qrCodeURL]
-    );
+  // Generate QR Code URL with doctor_id
+  const qrCodeURL = `https://thriving-bonbon-27d691.netlify.app/?doctorId=${doctorId}`;
 
-    return res.rows[0];
+  // Update doctor with QR code URL
+  await updateDoctorQRCode(doctorId, qrCodeURL);
+
+  return { doctor_id: doctorId, doctor_name: doctorName, clinic_name: clinicName, qr_code_url: qrCodeURL };
 };
 
 module.exports = { insertPatient, insertAppointment, findPatientByContactNumber, insertDoctor, updateDoctorQRCode };
-
