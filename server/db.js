@@ -1,4 +1,5 @@
 const { Pool } = require('pg');
+require('dotenv').config();
 
 const pool = new Pool({
     user: process.env.PGUSER,
@@ -40,6 +41,7 @@ const insertDoctor = async (doctorName, clinicName) => {
     // Generate QR Code URL
     // For simplicity, assuming doctor_id is known after insert, which is not usually the case
     // You would normally need to retrieve the doctor_id after insert
+    console.log('ye hai pool: ', pool);
     const qrCodeURL = `http://localhost:3000/doctor/`; // Append doctor_id after insertion
 
     const res = await pool.query(

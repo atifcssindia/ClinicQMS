@@ -4,6 +4,7 @@ const app = express();
 const cors = require('cors');
 const port = process.env.PORT || 5001;
 app.use(cors());
+require('dotenv').config();
 
 const corsOptions = {
   origin: ['http://localhost:3000', 'https://thriving-bonbon-27d691.netlify.app'],
