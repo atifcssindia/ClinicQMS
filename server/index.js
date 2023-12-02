@@ -1,5 +1,7 @@
 const express = require('express');
-const { insertPatient, insertAppointment, findPatientByContactNumber, insertDoctor, updateDoctorQRCode } = require('./db');
+const { insertPatient, insertAppointment, findPatientByContactNumber, insertDoctor, updateDoctorQRCode,insertUser, findUserByEmail } = require('./db');
+const bcrypt = require('bcrypt');
+const jwt = require('jsonwebtoken');
 const app = express();
 const cors = require('cors');
 const port = process.env.PORT || 5001;
@@ -54,6 +56,39 @@ app.post('/registerDoctor', async (req, res) => {
   }
 });
 
+app.post('/auth/register', async (req, res) => {
+  const { email, password, role, doctor_name, clinic_name } = req.body;
+  try {
+    const hashedPassword = await bcrypt.hash(password, 10);
+    const user = await insertUser(email, hashedPassword, role);
+
+    // Continue with the role-specific logic (doctor/receptionist)
+    // ...
+
+    // Create a token
+    const token = jwt.sign({ user_id: user.user_id, role: user.role }, process.env.JWT_SECRET, { expiresIn: '1h' });
+    res.status(201).json({ token, role });
+  } catch (error) {
+    console.error('Registration error:', error);
+    res.status(500).send('Server error');
+  }
+});
+
+app.post('/auth/login', async (req, res) => {
+  const { email, password } = req.body;
+  try {
+    const user = await findUserByEmail(email);
+    if (user && await bcrypt.compare(password, user.hashed_password)) {
+      const token = jwt.sign({ user_id: user.user_id, role: user.role }, process.env.JWT_SECRET, { expiresIn: '1h' });
+      res.json({ token, role: user.role });
+    } else {
+      res.status(401).send('Invalid credentials');
+    }
+  } catch (error) {
+    console.error('Login error:', error);
+    res.status(500).send('Server error');
+  }
+});
 
 
 app.get('/', (req, res) => {

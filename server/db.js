@@ -68,4 +68,21 @@ const insertDoctor = async (doctorName, clinicName) => {
   return { doctor_id: doctorId, doctor_name: doctorName, clinic_name: clinicName, qr_code_url: qrCodeURL };
 };
 
-module.exports = { insertPatient, insertAppointment, findPatientByContactNumber, insertDoctor, updateDoctorQRCode };
+const insertUser = async (email, hashedPassword, role) => {
+  const res = await pool.query(
+    'INSERT INTO users (email, hashed_password, role) VALUES ($1, $2, $3) RETURNING user_id',
+    [email, hashedPassword, role]
+  );
+  return res.rows[0];
+};
+
+const findUserByEmail = async (email) => {
+  const res = await pool.query(
+    'SELECT * FROM users WHERE email = $1',
+    [email]
+  );
+  return res.rows[0];
+};
+
+
+module.exports = { insertPatient, insertAppointment, findPatientByContactNumber, insertDoctor, updateDoctorQRCode,insertUser, findUserByEmail };
