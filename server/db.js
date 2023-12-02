@@ -89,7 +89,7 @@ const insertDoctor = async (userId, doctorName, clinicName) => {
   const doctorId = insertRes.rows[0].doctor_id;
 
   // Generate QR Code URL with doctor_id
-  const qrCodeURL = `https://thriving-bonbon-27d691.netlify.app/?doctorId=${doctorId}`;
+  const qrCodeURL = `https://app.vitalx.in/?doctorId=${doctorId}`;
 
   // Update doctor with QR code URL
   await pool.query('UPDATE Doctor SET qr_code_url = $1 WHERE doctor_id = $2', [qrCodeURL, doctorId]);

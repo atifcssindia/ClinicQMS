@@ -9,7 +9,7 @@ app.use(cors());
 require('dotenv').config();
 
 const corsOptions = {
-  origin: ['http://localhost:3000', 'https://thriving-bonbon-27d691.netlify.app'],
+  origin: ['http://localhost:3000', 'https://thriving-bonbon-27d691.netlify.app', 'https://app.vitalx.in'],
   optionsSuccessStatus: 200 // some legacy browsers (IE11, various SmartTVs) choke on 204
 };
 
@@ -45,7 +45,7 @@ app.post('/registerDoctor', async (req, res) => {
     let doctor = await insertDoctor(doctor_name, clinic_name);
 
     // Generate QR code URL with doctor_id
-    const qrCodeURL = `https://thriving-bonbon-27d691.netlify.app/?doctorId=${doctor.doctor_id}`;
+    const qrCodeURL = `https://app.vitalx.in/?doctorId=${doctor.doctor_id}`;
     await updateDoctorQRCode(doctor.doctor_id, qrCodeURL);
 
     // Send updated doctor info, including QR code URL
