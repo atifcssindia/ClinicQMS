@@ -1,5 +1,5 @@
 const express = require('express');
-const { insertPatient, insertAppointment, findPatientByContactNumber, insertDoctor, updateDoctorQRCode,insertUser, findUserByEmail } = require('./db');
+const { insertPatient, getTodaysAppointments, insertAppointment, findPatientByContactNumber, insertDoctor, updateDoctorQRCode,insertUser, findUserByEmail } = require('./db');
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
 const app = express();
@@ -59,20 +59,35 @@ app.post('/registerDoctor', async (req, res) => {
 app.post('/auth/register', async (req, res) => {
   const { email, password, role, doctor_name, clinic_name } = req.body;
   try {
+    // Hash the password
     const hashedPassword = await bcrypt.hash(password, 10);
+
+    // Insert user and get user_id
     const user = await insertUser(email, hashedPassword, role);
 
-    // Continue with the role-specific logic (doctor/receptionist)
-    // ...
+    let doctor;
+    if (role === 'doctor') {
+      // Insert doctor and get doctor_id
+      doctor = await insertDoctor(user.user_id, doctor_name, clinic_name);
+
+      // Generate QR code URL with doctor_id
+      const qrCodeURL = `https://thriving-bonbon-27d691.netlify.app/?doctorId=${doctor.doctor_id}`;
+      await updateDoctorQRCode(doctor.doctor_id, qrCodeURL);
+
+      doctor.qr_code_url = qrCodeURL;
+    }
 
     // Create a token
-    const token = jwt.sign({ user_id: user.user_id, role: user.role }, process.env.JWT_SECRET, { expiresIn: '1h' });
-    res.status(201).json({ token, role });
+    const token = jwt.sign({ user_id: user.user_id, role }, process.env.JWT_SECRET, { expiresIn: '1h' });
+
+    // Respond with the token and user info
+    res.status(201).json({ token, user, doctor }); // doctor will be undefined if role is not 'doctor'
   } catch (error) {
     console.error('Registration error:', error);
     res.status(500).send('Server error');
   }
 });
+
 
 app.post('/auth/login', async (req, res) => {
   const { email, password } = req.body;
@@ -93,6 +108,19 @@ app.post('/auth/login', async (req, res) => {
 
 app.get('/', (req, res) => {
   res.send('Hello, VitalX!');
+});
+
+app.get('/appointments/today', async (req, res) => {
+  const userId = req.query.userId; // Assuming you pass doctorId as a query parameter
+  const date = req.query.date; // Optional: if a date is passed as a query parameter
+
+  try {
+    const appointments = await getTodaysAppointments(userId, date ? new Date(date) : undefined);
+    res.json(appointments);
+  } catch (error) {
+    console.error('Error fetching appointments:', error);
+    res.status(500).send('Server error');
+  }
 });
 
 app.listen(port, () => {

@@ -17,6 +17,37 @@ const insertPatient = async (patientName, patientAge, patientWeight, patientCont
   return res.rows[0];
 };
 
+const getDoctorIdFromUserId = async (userId) => {
+  const res = await pool.query(
+    'SELECT doctor_id FROM doctor WHERE user_id = $1',
+    [userId]
+  );
+  
+  return res.rows[0].doctor_id; // Assuming that each user_id has exactly one doctor_id
+};
+
+const getTodaysAppointments = async (userId, date = new Date()) => {
+  console.log('userId in getTodaysAppointments: ', userId);
+  const doctorId = await getDoctorIdFromUserId(userId);
+  // Format the date as YYYY-MM-DD
+  const formattedDate = date.toISOString().split('T')[0];
+  
+  const query = `
+    SELECT * FROM appointment
+    WHERE doctor_id = $1 AND date_time::date = $2
+    ORDER BY date_time ASC;`;
+  
+  const values = [doctorId, formattedDate];
+  
+  try {
+    const res = await pool.query(query, values);
+    return res.rows;
+  } catch (err) {
+    console.error('Error fetching appointments:', err);
+    throw err; // Rethrow the error and handle it in your route
+  }
+};
+
 const getNextAppointmentNumber = async (doctorId) => {
   const currentDate = new Date().toISOString().slice(0, 10); // Format as YYYY-MM-DD
   const res = await pool.query(
@@ -25,9 +56,7 @@ const getNextAppointmentNumber = async (doctorId) => {
   );
   const nextNumber = parseInt(res.rows[0].count) + 1;
   return nextNumber;
-};
-
-
+}
 
 const insertAppointment = async (patientId, doctorId) => {
   const appointmentNumber = await getNextAppointmentNumber(doctorId);
@@ -51,11 +80,11 @@ const updateDoctorQRCode = async (doctorId, qrCodeUrl) => {
   await pool.query('UPDATE Doctor SET qr_code_url = $1 WHERE doctor_id = $2', [qrCodeUrl, doctorId]);
 };
 
-const insertDoctor = async (doctorName, clinicName) => {
+const insertDoctor = async (userId, doctorName, clinicName) => {
   // Insert doctor without QR code URL initially
   const insertRes = await pool.query(
-    'INSERT INTO Doctor(doctor_name, clinic_name) VALUES($1, $2) RETURNING doctor_id',
-    [doctorName, clinicName]
+    'INSERT INTO Doctor(user_id, doctor_name, clinic_name) VALUES($1, $2, $3) RETURNING doctor_id',
+    [userId, doctorName, clinicName]
   );
   const doctorId = insertRes.rows[0].doctor_id;
 
@@ -63,14 +92,16 @@ const insertDoctor = async (doctorName, clinicName) => {
   const qrCodeURL = `https://thriving-bonbon-27d691.netlify.app/?doctorId=${doctorId}`;
 
   // Update doctor with QR code URL
-  await updateDoctorQRCode(doctorId, qrCodeURL);
+  await pool.query('UPDATE Doctor SET qr_code_url = $1 WHERE doctor_id = $2', [qrCodeURL, doctorId]);
 
   return { doctor_id: doctorId, doctor_name: doctorName, clinic_name: clinicName, qr_code_url: qrCodeURL };
 };
 
+
+
 const insertUser = async (email, hashedPassword, role) => {
   const res = await pool.query(
-    'INSERT INTO users (email, hashed_password, role) VALUES ($1, $2, $3) RETURNING user_id',
+    'INSERT INTO users (email, hashed_password, role) VALUES ($1, $2, $3) RETURNING user_id, role',
     [email, hashedPassword, role]
   );
   return res.rows[0];
@@ -85,4 +116,4 @@ const findUserByEmail = async (email) => {
 };
 
 
-module.exports = { insertPatient, insertAppointment, findPatientByContactNumber, insertDoctor, updateDoctorQRCode,insertUser, findUserByEmail };
+module.exports = { insertPatient,getTodaysAppointments, insertAppointment, findPatientByContactNumber, insertDoctor, updateDoctorQRCode,insertUser, findUserByEmail };
