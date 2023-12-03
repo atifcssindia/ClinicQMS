@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { TextField, Button, Card, CardContent, Typography } from '@mui/material';
-import QRCode from 'qrcode.react';
+// import QRCode from 'qrcode.react';
 
 const Registration = () => {
   const navigate = useNavigate();
@@ -10,7 +10,7 @@ const Registration = () => {
   const [confirmPassword, setConfirmPassword] = useState('');
   const [doctorName, setDoctorName] = useState('');
   const [clinicName, setClinicName] = useState('');
-  const [qrCodeUrl, setQrCodeUrl] = useState('');
+  // const [qrCodeUrl, setQrCodeUrl] = useState('');
 
   const handleRegister = async (event) => {
     event.preventDefault();
@@ -103,16 +103,6 @@ const Registration = () => {
           Register
         </Button>
       </form>
-      {qrCodeUrl && (
-        <Card>
-          <CardContent>
-            <Typography variant="h6" gutterBottom>
-              Your QR Code
-            </Typography>
-            <QRCode value={qrCodeUrl} />
-          </CardContent>
-        </Card>
-      )}
     </div>
   );
 };
