@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { TextField, Button, Card, CardContent, Typography } from '@mui/material';
+import { TextField, Button } from '@mui/material';
 // import QRCode from 'qrcode.react';
 
 const Registration = () => {
