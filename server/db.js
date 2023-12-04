@@ -29,24 +29,39 @@ const getDoctorIdFromUserId = async (userId) => {
 const getTodaysAppointments = async (userId, date = new Date()) => {
   console.log('userId in getTodaysAppointments: ', userId);
   const doctorId = await getDoctorIdFromUserId(userId);
-  // Format the date as YYYY-MM-DD
   const formattedDate = date.toISOString().split('T')[0];
-  
+
   const query = `
-    SELECT * FROM appointment
-    WHERE doctor_id = $1 AND date_time::date = $2
-    ORDER BY date_time ASC;`;
-  
+    SELECT
+      a.appointment_id,
+      CONCAT(p.patient_name, ', ', p.patient_age, 'y, ', p.gender) AS patient_details,
+      a.status,
+      ROW_NUMBER() OVER (PARTITION BY a.date_time::date ORDER BY a.date_time ASC) AS seq_no
+    FROM
+      appointment a
+      JOIN patient p ON a.patient_id = p.patient_id
+    WHERE
+      a.doctor_id = $1 AND a.date_time::date = $2
+    ORDER BY
+      a.date_time ASC;
+  `;
+
   const values = [doctorId, formattedDate];
-  
+
   try {
     const res = await pool.query(query, values);
-    return res.rows;
+    return res.rows.map((row) => ({
+      seq_no: row.seq_no,
+      patient_details: row.patient_details,
+      status: row.status === 0 ? 'Waiting' : row.status === 1 ? 'In Progress' : 'Completed'
+    }));
   } catch (err) {
     console.error('Error fetching appointments:', err);
-    throw err; // Rethrow the error and handle it in your route
+    throw err;
   }
 };
+
+
 
 const getNextAppointmentNumber = async (doctorId) => {
   const currentDate = new Date().toISOString().slice(0, 10); // Format as YYYY-MM-DD
@@ -115,5 +130,71 @@ const findUserByEmail = async (email) => {
   return res.rows[0];
 };
 
+// Set the status of the current patient to treated (2)
+const setPatientStatusTreated = async (appointmentId) => {
+  await pool.query(
+    'UPDATE appointment SET status = 2 WHERE appointment_id = $1',
+    [appointmentId]
+  );
+};
 
-module.exports = { insertPatient,getTodaysAppointments, insertAppointment, findPatientByContactNumber, insertDoctor, updateDoctorQRCode,insertUser, findUserByEmail };
+// Set the status of the next patient in the queue to being treated (1)
+const setNextPatientStatus = async (doctorId) => {
+  const res = await pool.query(
+    `SELECT appointment_id FROM appointment
+     WHERE doctor_id = $1 AND status = 0
+     ORDER BY date_time ASC LIMIT 1`,
+    [doctorId]
+  );
+
+  const nextAppointmentId = res.rows[0]?.appointment_id;
+  if (nextAppointmentId) {
+    await pool.query(
+      'UPDATE appointment SET status = 1 WHERE appointment_id = $1',
+      [nextAppointmentId]
+    );
+  }
+
+  return nextAppointmentId; // Return this for confirmation or further processing if needed
+};
+
+
+
+const updateAppointmentStatuses = async (doctorId) => {
+  await pool.query('BEGIN'); // Start a transaction
+
+  try {
+    // Set the status of the currently being treated appointment to treated (2)
+    await pool.query(
+      `UPDATE appointment SET status = 2 
+      WHERE appointment_id = (
+        SELECT appointment_id FROM appointment
+        WHERE doctor_id = $1 AND status = 1
+        ORDER BY date_time ASC LIMIT 1
+      )`, [doctorId]
+    );
+
+    // Set the status of the next appointment in the queue to being treated (1)
+    const res = await pool.query(
+      `UPDATE appointment SET status = 1 
+      WHERE appointment_id = (
+        SELECT appointment_id FROM appointment
+        WHERE doctor_id = $1 AND status = 0
+        ORDER BY date_time ASC LIMIT 1
+      ) RETURNING appointment_id`, [doctorId]
+    );
+
+    await pool.query('COMMIT'); // Commit the transaction if successful
+
+    const nextAppointmentId = res.rows[0]?.appointment_id;
+    return nextAppointmentId || null; // Return the next appointment ID, or null if no more appointments
+  } catch (err) {
+    await pool.query('ROLLBACK'); // Roll back the transaction on error
+    throw err; // Re-throw the error to be handled in the route
+  }
+};
+
+
+
+
+module.exports = { insertPatient,getTodaysAppointments, insertAppointment, findPatientByContactNumber, insertDoctor, updateDoctorQRCode,insertUser, findUserByEmail, setNextPatientStatus ,setPatientStatusTreated,getDoctorIdFromUserId,updateAppointmentStatuses};

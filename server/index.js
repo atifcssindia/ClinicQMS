@@ -1,5 +1,5 @@
 const express = require('express');
-const { insertPatient, getTodaysAppointments, insertAppointment, findPatientByContactNumber, insertDoctor, updateDoctorQRCode,insertUser, findUserByEmail } = require('./db');
+const { insertPatient, getTodaysAppointments, insertAppointment, findPatientByContactNumber, insertDoctor, updateDoctorQRCode,insertUser, findUserByEmail,setNextPatientStatus ,setPatientStatusTreated ,getDoctorIdFromUserId,updateAppointmentStatuses} = require('./db');
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
 const app = express();
@@ -101,6 +101,46 @@ app.post('/auth/login', async (req, res) => {
     }
   } catch (error) {
     console.error('Login error:', error);
+    res.status(500).send('Server error');
+  }
+});
+
+// app.post('/appointments/next', async (req, res) => {
+//   try {
+//     const { currentAppointmentId, doctorId } = req.body;
+
+//     // First, set the current patient's status to treated
+//     await setPatientStatusTreated(currentAppointmentId);
+
+//     // Then, find and update the next patient in line
+//     const nextAppointmentId = await setNextPatientStatus(doctorId);
+
+//     res.status(200).json({ message: 'Updated successfully', nextAppointmentId });
+//   } catch (error) {
+//     console.error('Error updating appointment status:', error);
+//     res.status(500).send('Server error');
+//   }
+// });
+
+app.post('/appointments/next', async (req, res) => {
+  const userId = req.body.userId; // Assume that userId is sent in the request body
+
+  try {
+    const doctorId = await getDoctorIdFromUserId(userId); // Retrieve doctorId from userId
+    if (!doctorId) {
+      return res.status(404).send('Doctor not found');
+    }
+
+    // Call the function to update the appointment statuses
+    const nextAppointmentId = await updateAppointmentStatuses(doctorId);
+
+    if (nextAppointmentId) {
+      res.status(200).json({ message: 'Queue updated', nextAppointmentId });
+    } else {
+      res.status(200).json({ message: 'No more appointments in the queue' });
+    }
+  } catch (error) {
+    console.error('Error updating appointment status:', error);
     res.status(500).send('Server error');
   }
 });

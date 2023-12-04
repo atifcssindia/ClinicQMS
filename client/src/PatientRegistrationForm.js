@@ -91,7 +91,7 @@ const PatientRegistrationForm = () => {
           }}
           className="bg-no-repeat bg-cover py-6 px-16 flex-col justify-between hidden lg:flex  relative"
         >
-          <div className="logo text-5xl text-white">ClinicQMS</div>
+          <div className="logo text-5xl text-white">VitalX</div>
 
           <div>
             {/* <div className="mb-6 flex items-center gap-4">
@@ -102,15 +102,11 @@ const PatientRegistrationForm = () => {
               </div>
             </div> */}
             <p className="text-lg text-white opacity-80">
-              Elstar comes with a complete set of UI components crafted with
-              Tailwind CSS, it fulfilled most of the use case to create modern
-              and beautiful UI and application
+            Transform your clinic with digital efficiency in under 30 minutes.
             </p>
           </div>
 
-          <span className="text-white">
-            Copyright © 2023 <span className="font-semibold">CSS India</span>{" "}
-          </span>
+          
         </div>
 
         <div className="col-span-2 flex flex-col justify-center items-center bg-white ">
