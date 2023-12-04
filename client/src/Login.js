@@ -9,6 +9,7 @@ const Login = () => {
 
   const handleLogin = async (event) => {
     event.preventDefault();
+    console.log(process.env.REACT_APP_API_URL);
     // Perform validation if needed
     try {
       const response = await fetch(
@@ -83,7 +84,7 @@ const Login = () => {
           </span>
         </div>
 
-        <div className="col-span-2 flex flex-col justify-center items-center bg-white dark:bg-gray-800">
+        <div className="col-span-2 flex flex-col justify-center items-center bg-white ">
           <div className="xl:w-6/12 px-8">
             <div className="mb-8">
               <h3 className="mb-1 text-xl font-bold">Welcome back!</h3>
