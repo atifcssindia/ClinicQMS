@@ -67,7 +67,7 @@ const DoctorView = () => {
   }
 
   return (
-    <div className="app-layout-classic flex flex-auto flex-col  bg-gray-50">
+    <div className="app-layout-classic flex flex-auto flex-col  bg-[#f3f4f6]">
       <div className="flex flex-auto min-w-0">
         <SideBar />
         <div className="flex flex-col flex-auto min-h-screen min-w-0 relative w-full">
@@ -75,7 +75,7 @@ const DoctorView = () => {
           <div className="h-full flex flex-auto flex-col">
             <div className="h-full flex flex-auto flex-col justify-between">
               <main className="h-full">
-                <div className="page-container relative h-full flex flex-auto flex-col px-4 sm:px-6 md:px-8 py-4 sm:py-6 md:px-8">
+                <div className="page-container relative h-full flex flex-auto flex-col px-4 sm:px-6 py-4 sm:py-6 md:px-8">
                   <h1 className=" text-xl font-semibold text-gray-800 mb-2">
                     Doctor Dashboard
                   </h1>

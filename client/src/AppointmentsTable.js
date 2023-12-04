@@ -11,7 +11,7 @@ import {
 
 const AppointmentsTable = ({ appointments }) => {
   return (
-    <TableContainer component={Paper}>
+    <TableContainer component={Paper} className=" !shadow-none !drop-shadow-md">
       <Table sx={{ minWidth: 650 }} aria-label="appointments table">
         <TableHead className=" !border-b-2">
           <TableRow>
@@ -35,7 +35,7 @@ const AppointmentsTable = ({ appointments }) => {
             </TableCell>
           </TableRow>
         </TableHead>
-        <TableBody className=" !border-b-0">
+        <TableBody className=" ">
           {appointments.map((appointment) => (
             <TableRow
               key={appointment.appointment_id}

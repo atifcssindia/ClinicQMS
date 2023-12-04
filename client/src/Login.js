@@ -58,7 +58,7 @@ const Login = () => {
       <div className="grid lg:grid-cols-3 h-full">
         <div
           style={{
-            backgroundImage: `url("images/auth-side-bg.jpg")`,
+            backgroundImage: `url("images/intro.png")`,
           }}
           className="bg-no-repeat bg-cover py-6 px-16 flex-col justify-between hidden lg:flex  relative"
         >
