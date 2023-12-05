@@ -14,6 +14,9 @@ const PatientRegistrationForm = () => {
   const [contactNumber, setContactNumber] = useState("");
   const [doctorId, setDoctorId] = useState(null);
   const [appointmentNumber, setAppointmentNumber] = useState(null);
+  const [isRegistering, setIsRegistering] = useState(false);
+  const [peopleAhead, setPeopleAhead] = useState(null);
+  const [gender, setGender] = useState("");
 
   useEffect(() => {
     // Extract doctorId from URL query parameters
@@ -24,6 +27,10 @@ const PatientRegistrationForm = () => {
 
   const handleNameChange = (event) => {
     setName(event.target.value);
+  };
+
+  const handleGenderChange = (event) => {
+    setGender(event.target.value);
   };
 
   const handleAgeChange = (event) => {
@@ -40,6 +47,7 @@ const PatientRegistrationForm = () => {
 
   const handleSubmit = async (event) => {
     event.preventDefault(); // Preventt the default form submit action
+    setIsRegistering(true);
 
     const patientData = {
       patient_name: name,
@@ -64,9 +72,12 @@ const PatientRegistrationForm = () => {
       if (response.ok) {
         const data = await response.json();
         setAppointmentNumber(data.appointment.appointment_number); // Set the appointment number here
+        setPeopleAhead(data.peopleAhead);
+        setIsRegistering(false);
         console.log("Registration successful:", data);
         // Additional logic upon successful registration, like redirecting or showing a success message
       } else {
+        setIsRegistering(false);
         // Handle server errors (response not OK)
         console.error(
           "Registration failed:",
@@ -148,7 +159,23 @@ const PatientRegistrationForm = () => {
                 value={contactNumber}
                 onChange={handleContactNumberChange}
               />
-              <Button type="submit" variant="contained" color="primary">
+              <TextField
+                  select
+                  label="Gender"
+                  value={gender}
+                  onChange={handleGenderChange}
+                  margin="normal"
+                  fullWidth
+                  SelectProps={{
+                    native: true,
+                  }}
+                >
+                  <option value=""></option>
+                  <option value="M">Male</option>
+                  <option value="F">Female</option>
+                  <option value="O">Other</option>
+              </TextField>
+              <Button type="submit" variant="contained" color="primary" disabled={isRegistering}>
                 Register
               </Button>
             </form>
@@ -167,6 +194,11 @@ const PatientRegistrationForm = () => {
                 </CardContent>
               </Card>
             )}
+            {peopleAhead != null && (
+              <Typography variant="body2">
+                {peopleAhead} people ahead of you.
+              </Typography>
+      )}
           </div>
         </div>
       </div>

@@ -9,10 +9,10 @@ const pool = new Pool({
   port: process.env.PGPORT
 });
 
-const insertPatient = async (patientName, patientAge, patientWeight, patientContactNumber) => {
+const insertPatient = async (patientName, patientAge, patientWeight, patientContactNumber, gender) => {
   const res = await pool.query(
-    'INSERT INTO Patient(patient_name, patient_age, patient_weight, patient_contact_number) VALUES($1, $2, $3, $4) RETURNING *',
-    [patientName, patientAge, patientWeight, patientContactNumber]
+    'INSERT INTO Patient(patient_name, patient_age, patient_weight, patient_contact_number, gender) VALUES($1, $2, $3, $4, $5) RETURNING *',
+    [patientName, patientAge, patientWeight, patientContactNumber, gender]
   );
   return res.rows[0];
 };
@@ -79,8 +79,18 @@ const insertAppointment = async (patientId, doctorId) => {
     'INSERT INTO Appointment(patient_id, doctor_id, date_time, status, appointment_number) VALUES($1, $2, NOW(), 0, $3) RETURNING *',
     [patientId, doctorId, appointmentNumber]
   );
-  return res.rows[0];
+
+  const waitingAppointmentsCount = await pool.query(
+    'SELECT COUNT(*) FROM Appointment WHERE doctor_id = $1 AND status = 0 AND appointment_number < $2',
+    [doctorId, appointmentNumber]
+  );
+
+  return {
+    appointment: res.rows[0],
+    peopleAhead: parseInt(waitingAppointmentsCount.rows[0].count, 10)
+  };
 };
+
 
 
 const findPatientByContactNumber = async (contactNumber) => {
