@@ -122,6 +122,14 @@ const insertDoctor = async (userId, doctorName, clinicName) => {
   return { doctor_id: doctorId, doctor_name: doctorName, clinic_name: clinicName, qr_code_url: qrCodeURL };
 };
 
+const getPeopleAheadCount = async (appointmentNumber, doctorId) => {
+  const result = await pool.query(
+    'SELECT COUNT(*) FROM Appointment WHERE doctor_id = $1 AND status = 0 AND appointment_number < $2',
+    [doctorId, appointmentNumber]
+  );
+  return parseInt(result.rows[0].count, 10);
+};
+
 
 
 const insertUser = async (email, hashedPassword, role) => {
@@ -207,4 +215,4 @@ const updateAppointmentStatuses = async (doctorId) => {
 
 
 
-module.exports = { insertPatient,getTodaysAppointments, insertAppointment, findPatientByContactNumber, insertDoctor, updateDoctorQRCode,insertUser, findUserByEmail, setNextPatientStatus ,setPatientStatusTreated,getDoctorIdFromUserId,updateAppointmentStatuses};
+module.exports = { insertPatient,getTodaysAppointments, insertAppointment, findPatientByContactNumber, insertDoctor, updateDoctorQRCode,insertUser, findUserByEmail, setNextPatientStatus ,setPatientStatusTreated,getDoctorIdFromUserId,updateAppointmentStatuses,getPeopleAheadCount};

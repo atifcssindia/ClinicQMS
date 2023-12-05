@@ -6,6 +6,8 @@ import {
   CardContent,
   Typography,
 } from "@mui/material";
+import { io } from 'socket.io-client';
+
 
 const PatientRegistrationForm = () => {
   const [name, setName] = useState("");
@@ -17,6 +19,7 @@ const PatientRegistrationForm = () => {
   const [isRegistering, setIsRegistering] = useState(false);
   const [peopleAhead, setPeopleAhead] = useState(null);
   const [gender, setGender] = useState("");
+  const [registrationCompleted, setRegistrationCompleted] = useState(false); // New state
 
   useEffect(() => {
     // Extract doctorId from URL query parameters
@@ -24,6 +27,24 @@ const PatientRegistrationForm = () => {
     const doctorId = query.get("doctorId");
     setDoctorId(doctorId);
   }, []);
+
+  useEffect(() => {
+    // Connect to WebSocket server
+    const socket = io(process.env.REACT_APP_API_URL);
+
+    // Listen for queue updates
+    socket.on('queueUpdated', async () => {
+      if (doctorId && appointmentNumber) {
+        // Fetch the updated people ahead count
+        const response = await fetch(`/peopleAhead?doctorId=${doctorId}&appointmentNumber=${appointmentNumber}`);
+        const data = await response.json();
+        setPeopleAhead(data.peopleAhead);
+      }
+    });
+
+    // Cleanup on unmount
+    return () => socket.disconnect();
+  }, [doctorId, appointmentNumber]);
 
   const handleNameChange = (event) => {
     setName(event.target.value);
@@ -73,11 +94,10 @@ const PatientRegistrationForm = () => {
         const data = await response.json();
         setAppointmentNumber(data.appointment.appointment_number); // Set the appointment number here
         setPeopleAhead(data.peopleAhead);
-        setIsRegistering(false);
+        setRegistrationCompleted(true);
         console.log("Registration successful:", data);
         // Additional logic upon successful registration, like redirecting or showing a success message
       } else {
-        setIsRegistering(false);
         // Handle server errors (response not OK)
         console.error(
           "Registration failed:",
@@ -90,6 +110,8 @@ const PatientRegistrationForm = () => {
       // Handle network errors
       console.error("Network error:", error);
       // Show error message to the user, if appropriate
+    } finally {
+      setIsRegistering(false);
     }
   };
 
@@ -175,7 +197,7 @@ const PatientRegistrationForm = () => {
                   <option value="F">Female</option>
                   <option value="O">Other</option>
               </TextField>
-              <Button type="submit" variant="contained" color="primary" disabled={isRegistering}>
+              <Button type="submit" variant="contained" color="primary" disabled={isRegistering || registrationCompleted}>
                 Register
               </Button>
             </form>

@@ -1,10 +1,13 @@
 const express = require('express');
-const { insertPatient, getTodaysAppointments, insertAppointment, findPatientByContactNumber, insertDoctor, updateDoctorQRCode,insertUser, findUserByEmail,setNextPatientStatus ,setPatientStatusTreated ,getDoctorIdFromUserId,updateAppointmentStatuses} = require('./db');
+const { insertPatient, getTodaysAppointments, insertAppointment, findPatientByContactNumber, insertDoctor, updateDoctorQRCode,insertUser, findUserByEmail,setNextPatientStatus ,setPatientStatusTreated ,getDoctorIdFromUserId,updateAppointmentStatuses,getPeopleAheadCount} = require('./db');
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
 const app = express();
 const cors = require('cors');
 const port = process.env.PORT || 5001;
+const { createServer } = require('http');
+const { Server } = require('socket.io');
+
 app.use(cors());
 require('dotenv').config();
 
@@ -16,6 +19,33 @@ const corsOptions = {
 app.use(cors(corsOptions));
 
 app.use(express.json());
+
+const httpServer = createServer(app);
+
+const io = new Server(httpServer, {
+  cors: {
+    origin: "*", // Be sure to restrict the origin in production
+    methods: ["GET", "POST"],
+  }
+});
+
+io.on('connection', (socket) => {
+  console.log('a user connected');
+
+  socket.on('requestPeopleAheadUpdate', async ({ doctorId, appointmentNumber }) => {
+    try {
+      const peopleAhead = await getPeopleAheadCount(appointmentNumber, doctorId);
+      console.log("peopleAhead", peopleAhead);
+      socket.emit('updatePeopleAhead', { peopleAhead });
+    } catch (error) {
+      console.error('Error fetching people ahead count:', error);
+    }
+  });
+
+  socket.on('disconnect', () => {
+    console.log('user disconnected');
+  });
+});
 
 app.post('/register', async (req, res) => {
   try {
@@ -36,6 +66,18 @@ app.post('/register', async (req, res) => {
     res.status(201).json({ patient, appointment, peopleAhead });
   } catch (error) {
     console.error(error);
+    res.status(500).send('Server error');
+  }
+});
+
+app.get('/peopleAhead', async (req, res) => {
+  const { doctorId, appointmentNumber } = req.query;
+
+  try {
+    const peopleAhead = await getPeopleAheadCount(appointmentNumber, doctorId);
+    res.json({ peopleAhead });
+  } catch (error) {
+    console.error('Error fetching people ahead count:', error);
     res.status(500).send('Server error');
   }
 });
@@ -124,19 +166,21 @@ app.post('/auth/login', async (req, res) => {
 // });
 
 app.post('/appointments/next', async (req, res) => {
-  const userId = req.body.userId; // Assume that userId is sent in the request body
+  const userId = req.body.userId;
 
   try {
-    const doctorId = await getDoctorIdFromUserId(userId); // Retrieve doctorId from userId
+    const doctorId = await getDoctorIdFromUserId(userId);
     if (!doctorId) {
       return res.status(404).send('Doctor not found');
     }
 
-    // Call the function to update the appointment statuses
     const nextAppointmentId = await updateAppointmentStatuses(doctorId);
 
     if (nextAppointmentId) {
       res.status(200).json({ message: 'Queue updated', nextAppointmentId });
+
+      // Emitting to all sockets to update their people ahead count
+      io.emit('queueUpdated', { doctorId });
     } else {
       res.status(200).json({ message: 'No more appointments in the queue' });
     }
@@ -164,6 +208,6 @@ app.get('/appointments/today', async (req, res) => {
   }
 });
 
-app.listen(port, () => {
+httpServer.listen(port, () => {
   console.log(`Server running on port ${port}`);
 });
