@@ -27,7 +27,6 @@ const getDoctorIdFromUserId = async (userId) => {
 };
 
 const getTodaysAppointments = async (userId, date = new Date()) => {
-  console.log('userId in getTodaysAppointments: ', userId);
   const doctorId = await getDoctorIdFromUserId(userId);
   const formattedDate = date.toISOString().split('T')[0];
 

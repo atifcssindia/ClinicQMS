@@ -36,7 +36,7 @@ const PatientRegistrationForm = () => {
     socket.on('queueUpdated', async () => {
       if (doctorId && appointmentNumber) {
         // Fetch the updated people ahead count
-        const response = await fetch(`/peopleAhead?doctorId=${doctorId}&appointmentNumber=${appointmentNumber}`);
+        const response = await fetch(`${process.env.REACT_APP_API_URL}/peopleAhead?doctorId=${doctorId}&appointmentNumber=${appointmentNumber}&_=${new Date().getTime()}`);
         const data = await response.json();
         setPeopleAhead(data.peopleAhead);
       }
