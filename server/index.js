@@ -8,7 +8,6 @@ const port = process.env.PORT || 5001;
 const { createServer } = require('http');
 const { Server } = require('socket.io');
 
-app.use(cors());
 require('dotenv').config();
 
 const corsOptions = {
@@ -60,6 +59,7 @@ app.post('/register', async (req, res) => {
 
     
     res.status(201).json({ patient, appointment, peopleAhead });
+    io.emit('appointmentsUpdated');
   } catch (error) {
     console.error(error);
     res.status(500).send('Server error');
@@ -143,23 +143,6 @@ app.post('/auth/login', async (req, res) => {
     res.status(500).send('Server error');
   }
 });
-
-// app.post('/appointments/next', async (req, res) => {
-//   try {
-//     const { currentAppointmentId, doctorId } = req.body;
-
-//     // First, set the current patient's status to treated
-//     await setPatientStatusTreated(currentAppointmentId);
-
-//     // Then, find and update the next patient in line
-//     const nextAppointmentId = await setNextPatientStatus(doctorId);
-
-//     res.status(200).json({ message: 'Updated successfully', nextAppointmentId });
-//   } catch (error) {
-//     console.error('Error updating appointment status:', error);
-//     res.status(500).send('Server error');
-//   }
-// });
 
 app.post('/appointments/next', async (req, res) => {
   const userId = req.body.userId;

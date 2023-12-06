@@ -5,6 +5,8 @@ import AppointmentsTable from "./AppointmentsTable";
 import Header from "./components/header";
 import SideBar from "./components/SideBar";
 import { Button } from '@mui/material';
+import { io } from 'socket.io-client';
+
 
 const DoctorView = () => {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
@@ -88,10 +90,33 @@ const DoctorView = () => {
     }
   }, [navigate]);
 
+
+  useEffect(() => {
+    const socket = io(process.env.REACT_APP_API_URL);
+    
+    // Listen for 'appointmentsUpdated' event
+    socket.on('appointmentsUpdated', () => {
+      // Fetch updated appointments list
+      const token = localStorage.getItem("token");
+      if (token) {
+        const decodedToken = jwtDecode(token);
+        fetchAppointments(decodedToken); // This will update the appointments based on the userId
+      }
+    });
+  
+    // Cleanup function to run when the component is unmounted
+    return () => {
+      socket.off('appointmentsUpdated');
+      socket.disconnect();
+    };
+  }, []);
+
   if (!isLoggedIn) {
     // Render nothing or a loading indicator while checking for token and role
     return null; // or <LoadingIndicator />;
   }
+
+
 
   
 
