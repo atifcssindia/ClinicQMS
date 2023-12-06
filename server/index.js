@@ -30,8 +30,6 @@ const io = new Server(httpServer, {
 });
 
 io.on('connection', (socket) => {
-  console.log('a user connected');
-
   socket.on('requestPeopleAheadUpdate', async ({ doctorId, appointmentNumber }) => {
     try {
       const peopleAhead = await getPeopleAheadCount(appointmentNumber, doctorId);
@@ -43,14 +41,12 @@ io.on('connection', (socket) => {
   });
 
   socket.on('disconnect', () => {
-    console.log('user disconnected');
   });
 });
 
 app.post('/register', async (req, res) => {
   try {
     const { patient_name, patient_age, patient_weight, patient_contact_number, doctor_id, gender } = req.body;
-    console.log("Request body:", req.body); // For debugging
     // Check if patient already exists
     let patient = await findPatientByContactNumber(patient_contact_number);
 
