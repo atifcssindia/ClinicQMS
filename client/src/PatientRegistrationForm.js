@@ -76,6 +76,7 @@ const PatientRegistrationForm = () => {
       patient_weight: weight,
       patient_contact_number: contactNumber,
       doctor_id: doctorId,
+      gender: gender
     };
 
     try {
