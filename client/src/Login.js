@@ -5,11 +5,13 @@ import { useNavigate } from "react-router-dom";
 const Login = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [otp, setOtp] = useState("");
+  const [phoneNumber, setPhoneNumber] = useState("");
+  const [showOtpForm, setShowOtpForm] = useState(false);
   const navigate = useNavigate();
 
   const handleLogin = async (event) => {
     event.preventDefault();
-    console.log(process.env.REACT_APP_API_URL);
     // Perform validation if needed
     try {
       const response = await fetch(
@@ -31,6 +33,7 @@ const Login = () => {
         // Redirect based on the role
         switch (data.role) {
           case "doctor":
+            // console.log(data);
             navigate("/doctorview");
             break;
           case "receptionist":
@@ -51,7 +54,85 @@ const Login = () => {
     }
   };
 
-  // const backgroundImageAuth = "./auth-side-bg.jpg";
+  const handleSendOtp = async () => {
+    try {
+      const response = await fetch(
+        `${process.env.REACT_APP_API_URL}/generateOTP`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            phoneNumber: phoneNumber, // replace this with the actual state variable you have for phoneNumber
+          }),
+        }
+      );
+
+      const data = await response.json();
+
+      if (data.success) {
+        console.log(data.message);
+        // Handle UI changes, like showing an input field for entering OTP
+      } else {
+        // Handle the case where OTP sending failed
+        console.error("Failed to send OTP");
+      }
+    } catch (error) {
+      console.log(error);
+      console.error("Error sending OTP:", error);
+      // Handle errors, maybe show a message to the user
+    }
+  };
+
+  const handleVerifyOtp = async () => {
+    try {
+      const response = await fetch(
+        `${process.env.REACT_APP_API_URL}/verifyDoctorOTP`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            phoneNumber: phoneNumber,
+            otp: otp,
+          }),
+        }
+      );
+
+      const data = await response.json();
+
+      if (data.success) {
+        // Store the token in local storage or in-memory storage as preferred
+        localStorage.setItem("token", data.token);
+        console.log("here is data", data);
+        // Redirect based on the role
+        switch (data.role) {
+          case "doctor":
+            navigate("/doctorview");
+            break;
+          case "receptionist":
+            navigate("/receptionview");
+            break;
+          default:
+            // Handle other roles or lack thereof
+            throw new Error("Unknown role");
+        }
+      } else {
+        // Handle the case where OTP sending failed
+        console.error("Failed to send OTP");
+      }
+    } catch (error) {
+      console.log(error);
+      throw new Error(error.message || "Login failed");
+      // Handle errors, maybe show a message to the user
+    }
+  };
+
+  const handleToggleOtpForm = () => {
+    setShowOtpForm(!showOtpForm);
+  };
 
   return (
     <div className="app-layout-blank flex flex-auto flex-col h-[100vh]">
@@ -90,42 +171,71 @@ const Login = () => {
                 </p>
               </div>
 
-              <div style={{ padding: "0" }}>
-                <form onSubmit={handleLogin} style={{ marginBottom: "20px" }}>
+              {showOtpForm ? (
+                <>
+                  <TextField
+                    label="Phone Number"
+                    value={phoneNumber}
+                    onChange={(e) => setPhoneNumber(e.target.value)}
+                    margin="normal"
+                    fullWidth
+                  />
+                  <Button onClick={handleSendOtp} variant="contained" fullWidth>
+                    Send OTP
+                  </Button>
+                  <TextField
+                    label="OTP"
+                    value={otp}
+                    onChange={(e) => setOtp(e.target.value)}
+                    margin="normal"
+                    fullWidth
+                  />
+                  <Button
+                    onClick={handleVerifyOtp}
+                    variant="contained"
+                    fullWidth
+                  >
+                    Verify OTP
+                  </Button>
+                  <Button variant="text" onClick={handleToggleOtpForm}>
+                    Back to Email/Password
+                  </Button>
+                </>
+              ) : (
+                <>
                   <TextField
                     label="Email"
                     type="email"
-                    variant="outlined"
-                    fullWidth
-                    margin="normal"
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
+                    margin="normal"
+                    fullWidth
                   />
                   <TextField
                     label="Password"
                     type="password"
-                    variant="outlined"
-                    fullWidth
-                    margin="normal"
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
+                    margin="normal"
+                    fullWidth
                   />
                   <Button
                     type="submit"
+                    onClick={handleLogin}
                     variant="contained"
-                    color="primary"
                     fullWidth
                   >
                     Login
                   </Button>
-                </form>
-                <Button
-                  variant="text"
-                  onClick={() => navigate("/Registration")}
-                >
-                  Don't have an account? Register
-                </Button>
-              </div>
+                  <Button variant="text" onClick={handleToggleOtpForm}>
+                    Or login through OTP
+                  </Button>
+                </>
+              )}
+
+              <Button variant="text" onClick={() => navigate("/Registration")}>
+                Don't have an account? Register
+              </Button>
             </div>
           </div>
         </div>

@@ -18,6 +18,7 @@ const QR = () => {
               <img
                 src="images/QR_Code_example.png"
                 className=" mx-auto w-full "
+                alt="test"
               />
             </div>
             <div className=" text-2xl font-bold  text-gray-800 text-center pt-5">

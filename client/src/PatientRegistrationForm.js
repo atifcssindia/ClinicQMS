@@ -19,6 +19,10 @@ const PatientRegistrationForm = () => {
   const [peopleAhead, setPeopleAhead] = useState(null);
   const [gender, setGender] = useState("");
   const [registrationCompleted, setRegistrationCompleted] = useState(false); // New state
+  const [otpSent, setOtpSent] = useState(false);
+  const [otp, setOtp] = useState("");
+  const [patientDetails, setPatientDetails] = useState("");
+  const [otpVerified, setOtpVerified] = useState(false);
 
   useEffect(() => {
     // Extract doctorId from URL query parameters
@@ -119,6 +123,66 @@ const PatientRegistrationForm = () => {
     }
   };
 
+  const handleSendOtp = async () => {
+    try {
+      const response = await fetch(
+        `${process.env.REACT_APP_API_URL}/generateOTP`,
+        {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ phoneNumber: contactNumber }),
+        }
+      );
+      const data = await response.json();
+
+      if (data.success) {
+        setOtpSent(true); // Update state for UI change
+      } else {
+        // Handle error
+        console.error("Error sending OTP");
+        // Show error message to the user
+      }
+    } catch (error) {
+      // Handle network or other errors
+      console.error(error);
+      // Show error message to the user
+    }
+  };
+
+  const handleVerifyOtp = async () => {
+    try {
+      const response = await fetch(
+        `${process.env.REACT_APP_API_URL}/verifyOTP`,
+        {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ phoneNumber: contactNumber, otp }),
+        }
+      );
+      const data = await response.json();
+      console.log(data);
+      if (data.success) {
+        setOtpVerified(true);
+        setPatientDetails(data.patientExists);
+        if (data.patientExists) {
+          setGender(data.patientExists.gender);
+          setAge(data.patientExists.patient_age);
+          setContactNumber(data.patientExists.patient_contact_number);
+          setName(data.patientExists.patient_name);
+          setWeight(data.patientExists.patient_weight);
+        }
+      } else {
+        // Handle invalid OTP
+        console.error("Invalid OTP");
+        // Show error message to the user
+      }
+    } catch (error) {
+      // Handle network or other errors
+      console.error(error, patientDetails);
+      // Show error message to the user
+    }
+  };
+
   return (
     <div className="app-layout-blank flex flex-auto flex-col h-[100vh]">
       <div className="flex h-full">
@@ -153,64 +217,98 @@ const PatientRegistrationForm = () => {
                 <h3 className="mb-1 text-xl font-bold">Hello Patient</h3>
                 <p className="text-gray-600">Please enter your details</p>
               </div>
-              <form onSubmit={handleSubmit}>
-                <TextField
-                  label="Name"
-                  variant="outlined"
-                  fullWidth
-                  margin="normal"
-                  value={name}
-                  onChange={handleNameChange}
-                />
-                <TextField
-                  label="Age"
-                  variant="outlined"
-                  fullWidth
-                  margin="normal"
-                  value={age}
-                  onChange={handleAgeChange}
-                />
-                <TextField
-                  label="Weight"
-                  variant="outlined"
-                  fullWidth
-                  margin="normal"
-                  value={weight}
-                  onChange={handleWeightChange}
-                />
-                <TextField
-                  label="ContactNumber"
-                  variant="outlined"
-                  fullWidth
-                  margin="normal"
-                  value={contactNumber}
-                  onChange={handleContactNumberChange}
-                />
-                <TextField
-                  select
-                  label="Gender"
-                  value={gender}
-                  onChange={handleGenderChange}
-                  margin="normal"
-                  fullWidth
-                  SelectProps={{
-                    native: true,
-                  }}
-                >
-                  <option value=""></option>
-                  <option value="M">Male</option>
-                  <option value="F">Female</option>
-                  <option value="O">Other</option>
-                </TextField>
-                <Button
-                  type="submit"
-                  variant="contained"
-                  color="primary"
-                  disabled={isRegistering || registrationCompleted}
-                >
-                  Register
-                </Button>
-              </form>
+              {!otpSent && (
+                <div className="flex">
+                  <div className=" w-8/12">
+                    <TextField
+                      label="Phone Number"
+                      value={contactNumber}
+                      onChange={handleContactNumberChange}
+                      className=" w-full"
+                    />
+                  </div>
+                  <div className=" w-4/12 text-center  self-center">
+                    <Button onClick={handleSendOtp}>Send OTP</Button>
+                  </div>
+                </div>
+              )}
+              {otpSent && !otpVerified && (
+                <div className="flex">
+                  <div className=" w-8/12">
+                    <TextField
+                      label="Enter OTP"
+                      value={otp}
+                      onChange={(e) => setOtp(e.target.value)}
+                    />
+                  </div>
+                  <div className=" w-4/12 text-center  self-center">
+                    <Button onClick={handleVerifyOtp}>Verify OTP</Button>
+                  </div>
+                </div>
+              )}
+              {otpVerified && (
+                <>
+                  <form onSubmit={handleSubmit}>
+                    <TextField
+                      label="Name"
+                      variant="outlined"
+                      fullWidth
+                      margin="normal"
+                      value={name}
+                      onChange={handleNameChange}
+                    />
+                    <TextField
+                      label="Age"
+                      variant="outlined"
+                      fullWidth
+                      margin="normal"
+                      value={age}
+                      onChange={handleAgeChange}
+                    />
+                    <TextField
+                      label="Weight"
+                      variant="outlined"
+                      fullWidth
+                      margin="normal"
+                      value={weight}
+                      onChange={handleWeightChange}
+                    />
+                    <TextField
+                      label="ContactNumber"
+                      variant="outlined"
+                      fullWidth
+                      margin="normal"
+                      value={contactNumber}
+                      onChange={handleContactNumberChange}
+                    />
+                    <TextField
+                      select
+                      label="Gender"
+                      value={gender}
+                      onChange={handleGenderChange}
+                      margin="normal"
+                      fullWidth
+                      SelectProps={{
+                        native: true,
+                      }}
+                    >
+                      <option value=""></option>
+                      <option value="M">Male</option>
+                      <option value="F">Female</option>
+                      <option value="O">Other</option>
+                    </TextField>
+                    <Button
+                      type="submit"
+                      variant="contained"
+                      color="primary"
+                      disabled={isRegistering || registrationCompleted}
+                    >
+                      Register
+                    </Button>
+                  </form>
+                </>
+              )}
+
               {appointmentNumber && (
                 <Card style={{ marginTop: 20 }}>
                   <CardContent>

@@ -23,7 +23,7 @@ const getDoctorIdFromUserId = async (userId) => {
     [userId]
   );
   
-  return res.rows[0].doctor_id; // Assuming that each user_id has exactly one doctor_id
+  return res.rows[0].doctor_id;
 };
 
 const getTodaysAppointments = async (userId, date = new Date()) => {
@@ -91,6 +91,31 @@ const insertAppointment = async (patientId, doctorId) => {
 };
 
 
+const findUserByPhoneNumber = async (phoneNumber) => {
+  const query = 'SELECT * FROM users WHERE phone_number = $1';
+  const { rows } = await pool.query(query, [phoneNumber]);
+  return rows[0]; // This will be undefined if the user is not found
+};
+
+// Assuming you have added a phone_number field to your users table
+const storeOTP = async (phoneNumber, otp) => {
+  const query = 'INSERT INTO otp (mobile_number, otp_sent, created_at, expires_at) VALUES ($1, $2, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP + INTERVAL \'5 minutes\')';
+  await pool.query(query, [phoneNumber, otp]);
+  // No return value required unless you need a confirmation
+};
+
+const verifyOTP = async (phoneNumber, otp) => {
+  const query = 'SELECT otp_sent FROM otp WHERE mobile_number = $1 AND expires_at > CURRENT_TIMESTAMP AND validated = FALSE';
+  const { rows } = await pool.query(query, [phoneNumber]);
+
+  if (rows.length > 0 && rows[0].otp_sent === otp) {
+    const updateQuery = 'UPDATE otp SET validated = TRUE WHERE mobile_number = $1';
+    await pool.query(updateQuery, [phoneNumber]);
+    return true; // OTP is correct and mobile number is now verified
+  } else {
+    return false; // OTP is incorrect or expired
+  }
+};
 
 const findPatientByContactNumber = async (contactNumber) => {
   const res = await pool.query(
@@ -107,7 +132,7 @@ const updateDoctorQRCode = async (doctorId, qrCodeUrl) => {
 const insertDoctor = async (userId, doctorName, clinicName) => {
   // Insert doctor without QR code URL initially
   const insertRes = await pool.query(
-    'INSERT INTO Doctor(user_id, doctor_name, clinic_name) VALUES($1, $2, $3) RETURNING doctor_id',
+    'INSERT INTO Doctor(user_id, doctor_name, clinic_name ) VALUES($1, $2, $3) RETURNING doctor_id',
     [userId, doctorName, clinicName]
   );
   const doctorId = insertRes.rows[0].doctor_id;
@@ -131,10 +156,10 @@ const getPeopleAheadCount = async (appointmentNumber, doctorId) => {
 
 
 
-const insertUser = async (email, hashedPassword, role) => {
+const insertUser = async (email, hashedPassword, role, phone_number, isMobileOTPAuthenticated) => {
   const res = await pool.query(
-    'INSERT INTO users (email, hashed_password, role) VALUES ($1, $2, $3) RETURNING user_id, role',
-    [email, hashedPassword, role]
+    'INSERT INTO users (email, hashed_password, role, phone_number, mobile_verified) VALUES ($1, $2, $3, $4, $5) RETURNING user_id, role',
+    [email, hashedPassword, role, phone_number, isMobileOTPAuthenticated]
   );
   return res.rows[0];
 };
@@ -214,4 +239,4 @@ const updateAppointmentStatuses = async (doctorId) => {
 
 
 
-module.exports = { insertPatient,getTodaysAppointments, insertAppointment, findPatientByContactNumber, insertDoctor, updateDoctorQRCode,insertUser, findUserByEmail, setNextPatientStatus ,setPatientStatusTreated,getDoctorIdFromUserId,updateAppointmentStatuses,getPeopleAheadCount};
+module.exports = { insertPatient,getTodaysAppointments, insertAppointment, findPatientByContactNumber, insertDoctor, updateDoctorQRCode,insertUser, findUserByEmail, setNextPatientStatus ,setPatientStatusTreated,getDoctorIdFromUserId,updateAppointmentStatuses,getPeopleAheadCount,storeOTP, verifyOTP, findUserByPhoneNumber};
