@@ -7,7 +7,7 @@ import { useSidebar } from "./services/SidebarContext";
 const AdminLayout = ({ children }) => {
   const { isSidebarOpen, toggleSidebar } = useSidebar();
   return (
-    <div className="app-layout-classic flex flex-auto flex-col  bg-[#f3f4f6]">
+    <div className="app-layout-classic flex flex-auto flex-col  bg-[#f4f5f5]">
       <div className="flex flex-auto min-w-0">
         <SideBar isOpen={isSidebarOpen} />
         <div className="flex flex-col flex-auto min-h-screen min-w-0 relative w-full  transition-width duration-600">

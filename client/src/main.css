@@ -1,3 +1,12 @@
 @import "tailwindcss/base";
 @import "tailwindcss/components";
 @import "tailwindcss/utilities";
+
+.customHover {
+  @apply hover:text-[#2e37a4];
+}
+
+.customHover:hover img {
+  filter: invert(13%) sepia(85%) saturate(7478%) hue-rotate(266deg)
+    brightness(50%) contrast(340%);
+}

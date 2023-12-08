@@ -118,7 +118,7 @@ const DoctorView = () => {
     <AdminLayout>
       {/* other compoent  */}
       <div className="page-container relative h-full flex flex-auto flex-col px-4 sm:px-6 py-4 sm:py-6 md:px-8">
-        <h1 className=" text-xl font-semibold text-gray-800 mb-2">
+        <h1 className="  text-lg font-semibold text-[#2E37A4] pt-2 pb-6">
           Appointments
         </h1>
         <AppointmentsTable appointments={appointments} />{" "}
