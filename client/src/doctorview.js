@@ -1,11 +1,13 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { jwtDecode } from "jwt-decode";
-import AppointmentsTable from "./AppointmentsTable";
-import { Button } from "@mui/material";
+// import AppointmentsTable from "./AppointmentsTable";
+import { Button, Link, Typography } from "@mui/material";
 
 import { io } from "socket.io-client";
 import AdminLayout from "./AdminLayout";
+import MyTable from "./components/MyTable";
+import MyBreakcrumbs from "./components/MyBreadcrumbs";
 
 const DoctorView = () => {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
@@ -114,14 +116,33 @@ const DoctorView = () => {
     return null; // or <LoadingIndicator />;
   }
 
+  const columns = [
+    { Header: "Seq No", accessor: "seq_no" },
+    { Header: "Patient Details", accessor: "patient_details" },
+    { Header: "Status", accessor: "status" },
+    // Add more columns as needed
+  ];
+
+  const breadcrumbs = [
+    {
+      label: "Appointments",
+      href: "#",
+
+      class: "text-[#2E37A4]",
+    },
+    { label: "Appointments List", class: "text-[#2E37A4]/60" },
+  ];
+
+  //
+
   return (
     <AdminLayout>
       {/* other compoent  */}
       <div className="page-container relative h-full flex flex-auto flex-col px-4 sm:px-6 py-4 sm:py-6 md:px-8">
-        <h1 className="  text-lg font-semibold text-[#2E37A4] pt-2 pb-6">
-          Appointments
-        </h1>
-        <AppointmentsTable appointments={appointments} />{" "}
+        <div className="pt-2 pb-6">
+          <MyBreakcrumbs data={breadcrumbs} />
+        </div>
+        <MyTable columns={columns} data={appointments} />
         {/* Render the table */}
         <div className="mt-4">
           {" "}
