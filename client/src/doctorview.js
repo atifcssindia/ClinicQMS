@@ -1,11 +1,13 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { jwtDecode } from "jwt-decode";
-import AppointmentsTable from "./AppointmentsTable";
-import { Button } from "@mui/material";
+// import AppointmentsTable from "./AppointmentsTable";
+import { Button, Link, Typography } from "@mui/material";
 
 import { io } from "socket.io-client";
 import AdminLayout from "./AdminLayout";
+import MyTable from "./components/MyTable";
+import MyBreakcrumbs from "./components/MyBreadcrumbs";
 
 const DoctorView = () => {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
@@ -111,26 +113,89 @@ const DoctorView = () => {
     return null; // or <LoadingIndicator />;
   }
 
+  const columns = [
+    { Header: "Seq No", accessor: "seq_no" },
+    { Header: "Patient Details", accessor: "patient_details" },
+    {
+      Header: "Status",
+      accessor: "status",
+      Cell: ({ value }) => {
+        // Check if the city is "Indore"
+        if (value === "Completed") {
+          // Render custom HTML for "Indore"
+          return (
+            <span className="bg-green-100 text-green-800 text-sm font-medium me-2 px-2.5 py-0.5 rounded dark:bg-green-900 dark:text-green-300">
+              {" "}
+              {value}
+            </span>
+          );
+        }
+
+        // Default rendering for other cities
+        return (
+          <span className="bg-yellow-100 text-yellow-800 text-sm font-medium me-2 px-2.5 py-0.5 rounded dark:bg-yellow-900 dark:text-yellow-300">
+            {value}
+          </span>
+        );
+      },
+    },
+    // Add more columns as needed
+  ];
+
+  const breadcrumbs = [
+    {
+      label: "Appointments",
+      href: "#",
+
+      class: "text-[#2E37A4]",
+    },
+    { label: "Appointments List", class: "text-[#2E37A4]/60" },
+  ];
+
+  //
+
   return (
     <AdminLayout>
       {/* other compoent  */}
       <div className="page-container relative h-full flex flex-auto flex-col px-4 sm:px-6 py-4 sm:py-6 md:px-8">
-        <h1 className="  text-lg font-semibold text-[#2E37A4] pt-2 pb-6">
-          Appointments
-        </h1>
-        <AppointmentsTable appointments={appointments} />{" "}
-        {/* Render the table */}
-        <div className="mt-4">
-          {" "}
-          {/* Add some margin to the top */}
-          <Button
-            variant="contained"
-            color="primary"
-            onClick={handleNextPatient}
-            className="self-end" // Tailwind class to align the button to the end of its container
-          >
-            Next Patient
-          </Button>
+        <div className="pt-2 pb-6">
+          <MyBreakcrumbs data={breadcrumbs} />
+        </div>
+
+        <div className=" bg-white rounded-xl shadow-md shadow-gray-200 ">
+          <div className=" px-5 py-3 flex flex-wrap md:flex-nowrap justify-between items-center gap-y-5">
+            <div>
+              <div className=" text-lg  font-semibold  text-gray-800">
+                Appointments List
+              </div>
+            </div>
+
+            <div className=" inline-flex ">
+              <form className=" relative w-[270px]">
+                <input
+                  type="text"
+                  className=" h-11  px-5 w-full pl-10 bg-gray-100 rounded-lg
+
+                  text-gray-900 ring-0 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-0 outline-none focus:ring-inset focus:ring-indigo-600
+                  "
+                  placeholder="Search here"
+                />
+                <a className=" absolute left-2.5 top-2.5">
+                  <img src="images/icons/search-normal.svg" alt="" />
+                </a>
+              </form>
+            </div>
+          </div>
+          <MyTable columns={columns} data={appointments} />
+          {/* Render the table */}
+          <div className="px-5 py-5">
+            <button
+              onClick={handleNextPatient}
+              className="min-w-[131px] text-base font-medium rounded-lg py-2 px-5  bg-[#2E37A4] text-white"
+            >
+              Next Patient
+            </button>{" "}
+          </div>
         </div>
       </div>
       {/* other compoent  */}
