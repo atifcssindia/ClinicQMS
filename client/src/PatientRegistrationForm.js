@@ -22,6 +22,7 @@ const PatientRegistrationForm = () => {
   const [registrationCompleted, setRegistrationCompleted] = useState(false); // New state
   const [otpSent, setOtpSent] = useState(false);
   const [otp, setOtp] = useState('');
+  const [patientDetails, setPatientDetails]= useState('');
   const [otpVerified, setOtpVerified]=useState(false);
 
 
@@ -171,7 +172,7 @@ const PatientRegistrationForm = () => {
       }
     } catch (error) {
       // Handle network or other errors
-      console.error(error);
+      console.error(error, patientDetails);
       // Show error message to the user
     }
   };
