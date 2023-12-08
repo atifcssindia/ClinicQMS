@@ -10,7 +10,71 @@ const Registration = () => {
   const [confirmPassword, setConfirmPassword] = useState("");
   const [doctorName, setDoctorName] = useState("");
   const [clinicName, setClinicName] = useState("");
+  const [phoneNumber, setPhoneNumber] = useState('');
+  const [otp, setOtp] = useState('');
+  const [isOtpVerified, setIsOtpVerified] = useState(false);
   // const [qrCodeUrl, setQrCodeUrl] = useState('');
+
+  const handleSendOtp = async () => {
+    try {
+      const response = await fetch(`${process.env.REACT_APP_API_URL}/generateOTP`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          phoneNumber: phoneNumber, // replace this with the actual state variable you have for phoneNumber
+        }),
+      });
+  
+      const data = await response.json();
+  
+      if (data.success) {
+        console.log(data.message);
+        // Handle UI changes, like showing an input field for entering OTP
+      } else {
+        // Handle the case where OTP sending failed
+        console.error('Failed to send OTP');
+      }
+    } catch (error) {
+      console.log(error);
+      console.error('Error sending OTP:', error);
+      // Handle errors, maybe show a message to the user
+    }
+  };
+
+  const handleVerifyOtp = async () => {
+    const otpPayload = {
+      phoneNumber: phoneNumber, 
+      otp: otp, 
+    };
+  
+    try {
+      const response = await fetch(`${process.env.REACT_APP_API_URL}/verifyOTP`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(otpPayload),
+      });
+  
+      const data = await response.json();
+  
+      if (data.success) {
+        console.log(data.message);
+        // Set your state based on the response
+        setIsOtpVerified(true);
+      } else {
+        console.error('Invalid OTP');
+        // Set your state based on the response
+        setIsOtpVerified(false);
+      }
+    } catch (error) {
+      console.error('Error verifying OTP:', error);
+      // Handle errors, maybe show a message to the user
+    }
+  };
+  
 
   const handleRegister = async (event) => {
     event.preventDefault();
@@ -38,6 +102,8 @@ const Registration = () => {
             role,
             doctor_name: doctorName,
             clinic_name: clinicName,
+            phone_number: phoneNumber,
+            isMobileOTPAuthenticated: true
           }),
         }
       );
@@ -143,7 +209,20 @@ const Registration = () => {
                   value={clinicName}
                   onChange={(e) => setClinicName(e.target.value)}
                 />
-                <Button type="submit" variant="contained" color="primary">
+                  <TextField
+                    label="Phone Number"
+                    value={phoneNumber}
+                    onChange={(e) => setPhoneNumber(e.target.value)}
+                  />
+                  <Button onClick={handleSendOtp}>Send OTP</Button>
+                  <TextField
+                    label="Enter OTP"
+                    value={otp}
+                    onChange={(e) => setOtp(e.target.value)}
+                  />
+                  <Button onClick={handleVerifyOtp}>Verify OTP</Button>
+
+                <Button type="submit" variant="contained" color="primary" disabled={!isOtpVerified}>
                   Register
                 </Button>
               </form>

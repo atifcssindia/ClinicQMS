@@ -1,5 +1,5 @@
 const express = require('express');
-const { insertPatient, getTodaysAppointments, insertAppointment, findPatientByContactNumber, insertDoctor, updateDoctorQRCode,insertUser, findUserByEmail,setNextPatientStatus ,setPatientStatusTreated ,getDoctorIdFromUserId,updateAppointmentStatuses,getPeopleAheadCount} = require('./db');
+const { insertPatient, getTodaysAppointments, insertAppointment, findPatientByContactNumber, insertDoctor, updateDoctorQRCode,insertUser, findUserByEmail,setNextPatientStatus ,setPatientStatusTreated ,getDoctorIdFromUserId,updateAppointmentStatuses,getPeopleAheadCount,storeOTP, verifyOTP, findUserByPhoneNumber} = require('./db');
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
 const app = express();
@@ -7,6 +7,8 @@ const cors = require('cors');
 const port = process.env.PORT || 5001;
 const { createServer } = require('http');
 const { Server } = require('socket.io');
+const axios = require('axios');
+
 
 require('dotenv').config();
 
@@ -66,6 +68,75 @@ app.post('/register', async (req, res) => {
   }
 });
 
+
+const generateOTP = () => {
+  // Generate a 4-digit OTP
+  return Math.floor(1000 + Math.random() * 9000).toString();
+};
+
+app.post('/generateOTP', async (req, res) => {
+  const { phoneNumber } = req.body;
+  const otp = generateOTP();
+
+  try {
+    await storeOTP(phoneNumber, otp);
+    // Send OTP via SMS
+    const url=`http://control.yourbulksms.com/api/sendhttp.php?authkey=39306c4031323332303650&mobiles=91${phoneNumber}&message=OTP ${otp} ERP login : VITALX EVOKES&sender=URBLKM&route=2&country=91&DLT_TE_ID=1707169641090797992`;
+    const response = await axios.get(url);
+    console.log(response.data); // Log the response from the SMS service for debugging
+    res.json({ success: true, message: "OTP sent successfully." });
+  } catch (error) {
+    console.error(error);
+    res.status(500).send('Error sending OTP');
+  }
+});
+
+app.post('/verifyOTP', async (req, res) => {
+  const { phoneNumber, otp } = req.body;
+
+  try {
+    const isVerified = await verifyOTP(phoneNumber, otp);
+    if (isVerified) {
+      res.json({ success: true, patientExists: await findPatientByContactNumber(phoneNumber), message: "OTP verified successfully." });
+    } else {
+      res.status(401).send('Invalid OTP');
+    }
+  } catch (error) {
+    console.error('Error verifying OTP:', error);
+    res.status(500).send('Server error');
+  }
+});
+
+app.post('/verifyDoctorOTP', async (req, res) => {
+  const { phoneNumber, otp } = req.body;
+
+  try {
+    const isOtpValid = await verifyOTP(phoneNumber, otp); // Implement this function to check OTP validity
+
+    if (isOtpValid) {
+      // Find the user by phone number
+      const user = await findUserByPhoneNumber(phoneNumber); // Implement this function
+
+      if (user) {
+        // Generate a JWT token for the user
+        const token = jwt.sign({ user_id: user.user_id, role: user.role }, process.env.JWT_SECRET, { expiresIn: '1h' });
+
+        // Respond with token and user role
+        res.json({ success: true, token, role: user.role });
+      } else {
+        // Handle case where user is not found
+        res.status(404).send('User not found');
+      }
+    } else {
+      // Handle invalid OTP
+      res.status(401).send('Invalid OTP');
+    }
+  } catch (error) {
+    console.error('Error verifying OTP:', error);
+    res.status(500).send('Server error');
+  }
+});
+
 app.get('/peopleAhead', async (req, res) => {
   const { doctorId, appointmentNumber } = req.query;
 
@@ -96,13 +167,13 @@ app.post('/registerDoctor', async (req, res) => {
 });
 
 app.post('/auth/register', async (req, res) => {
-  const { email, password, role, doctor_name, clinic_name } = req.body;
+  const { email, password, role, doctor_name, clinic_name, phone_number, isMobileOTPAuthenticated } = req.body;
   try {
     // Hash the password
     const hashedPassword = await bcrypt.hash(password, 10);
 
     // Insert user and get user_id
-    const user = await insertUser(email, hashedPassword, role);
+    const user = await insertUser(email, hashedPassword, role, phone_number, isMobileOTPAuthenticated);
 
     let doctor;
     if (role === 'doctor') {

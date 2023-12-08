@@ -20,6 +20,11 @@ const PatientRegistrationForm = () => {
   const [peopleAhead, setPeopleAhead] = useState(null);
   const [gender, setGender] = useState("");
   const [registrationCompleted, setRegistrationCompleted] = useState(false); // New state
+  const [otpSent, setOtpSent] = useState(false);
+  const [otp, setOtp] = useState('');
+  const [patientDetails, setPatientDetails]= useState('');
+  const [otpVerified, setOtpVerified]=useState(false);
+
 
   useEffect(() => {
     // Extract doctorId from URL query parameters
@@ -116,6 +121,62 @@ const PatientRegistrationForm = () => {
     }
   };
 
+  const handleSendOtp = async () => {
+    try {
+      const response = await fetch(`${process.env.REACT_APP_API_URL}/generateOTP`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ phoneNumber: contactNumber }),
+      });
+      const data = await response.json();
+      
+  
+      if (data.success) {
+        setOtpSent(true); // Update state for UI change
+      } else {
+        // Handle error
+        console.error("Error sending OTP");
+        // Show error message to the user
+      }
+    } catch (error) {
+      // Handle network or other errors
+      console.error(error);
+      // Show error message to the user
+    }
+  };
+
+  const handleVerifyOtp = async () => {
+    try {
+      const response = await fetch(`${process.env.REACT_APP_API_URL}/verifyOTP`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ phoneNumber: contactNumber, otp }),
+      });
+      const data = await response.json();
+      console.log(data);
+      if (data.success) {
+        setOtpVerified(true);
+        setPatientDetails(data.patientExists); 
+        if(data.patientExists){
+          setGender(data.patientExists.gender);
+          setAge(data.patientExists.patient_age);
+          setContactNumber(data.patientExists.patient_contact_number);
+          setName(data.patientExists.patient_name);
+          setWeight(data.patientExists.patient_weight);
+        }
+        
+      } else {
+        // Handle invalid OTP
+        console.error("Invalid OTP");
+        // Show error message to the user
+      }
+    } catch (error) {
+      // Handle network or other errors
+      console.error(error);
+      // Show error message to the user
+    }
+  };
+  
   return (
     <div className="app-layout-blank flex flex-auto flex-col h-[100vh]">
       <div className="grid lg:grid-cols-3 h-full">
@@ -149,7 +210,29 @@ const PatientRegistrationForm = () => {
               <h3 className="mb-1 text-xl font-bold">Hello Patient</h3>
               <p className="text-gray-600">Please enter your details</p>
             </div>
-            <form onSubmit={handleSubmit}>
+            {!otpSent && (
+        <>
+          <TextField
+            label="Phone Number"
+            value={contactNumber}
+            onChange={handleContactNumberChange}
+          />
+          <Button onClick={handleSendOtp}>Send OTP</Button>
+        </>
+      )}
+      {otpSent && !otpVerified && (
+        <>
+          <TextField
+            label="Enter OTP"
+            value={otp}
+            onChange={(e) => setOtp(e.target.value)}
+          />
+          <Button onClick={handleVerifyOtp}>Verify OTP</Button>
+        </>
+      )}
+      {otpVerified && (
+        <>
+          <form onSubmit={handleSubmit}>
               <TextField
                 label="Name"
                 variant="outlined"
@@ -201,7 +284,12 @@ const PatientRegistrationForm = () => {
               <Button type="submit" variant="contained" color="primary" disabled={isRegistering || registrationCompleted}>
                 Register
               </Button>
+            
             </form>
+        </>
+      )}
+
+            
             {appointmentNumber && (
               <Card style={{ marginTop: 20 }}>
                 <CardContent>

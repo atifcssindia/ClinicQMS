@@ -14,7 +14,6 @@ const DoctorView = () => {
 
   const fetchAppointments = async (decodedToken) => {
     const token = localStorage.getItem("token");
-
     try {
       const response = await fetch(
         `${process.env.REACT_APP_API_URL}/appointments/today?userId=${decodedToken.user_id}`,
@@ -26,7 +25,6 @@ const DoctorView = () => {
           },
         }
       );
-
       if (response.ok) {
         const appointmentsData = await response.json();
         setAppointments(appointmentsData);
@@ -71,7 +69,6 @@ const DoctorView = () => {
     if (token) {
       const decodedToken = jwtDecode(token);
       const currentDate = new Date();
-
       // Check if token is expired
       if (decodedToken.exp * 1000 < currentDate.getTime()) {
         localStorage.removeItem("token");
