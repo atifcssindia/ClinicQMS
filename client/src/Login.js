@@ -55,13 +55,15 @@ const Login = () => {
 
   return (
     <div className="app-layout-blank flex flex-auto flex-col h-[100vh]">
-      <div className="grid lg:grid-cols-3 h-full">
+      <div className="flex h-full">
         <div
-          style={{
-            backgroundImage: `url("images/intro.png")`,
-          }}
-          className="bg-no-repeat bg-cover py-6 px-16 flex-col justify-between hidden lg:flex  relative"
+          // style={{
+          //   backgroundImage: `url("images/intro.png")`,
+          // }}
+          className="bg-no-repeat bg-cover py-6 px-16 flex-col justify-between hidden lg:flex  relative bg-[#2E37A4]  xl:w-5/12"
         >
+          <img src="images/pattern.png" className=" absolute  z-0 left-0" />
+          <img src="images/login-02.png" className=" absolute  z-0 left-0" />
           <div className="logo text-5xl text-white">VitalX</div>
 
           <div>
@@ -73,54 +75,57 @@ const Login = () => {
               </div>
             </div> */}
             <p className="text-lg text-white opacity-80">
-            Transform your clinic with digital efficiency in under 30 minutes.
+              Transform your clinic with digital efficiency in under 30 minutes.
             </p>
           </div>
-
-          
         </div>
 
-        <div className="col-span-2 flex flex-col justify-center items-center bg-white ">
-          <div className="xl:w-6/12 px-8">
-            <div className="mb-8">
-              <h3 className="mb-1 text-xl font-bold">Welcome back!</h3>
-              <p className="text-gray-600">
-                Please enter your credentials to sign in!
-              </p>
-            </div>
+        <div className="flex flex-col justify-center items-center  xl:w-7/12 bg-[#f5f5f6]">
+          <div className="xl:w-7/12">
+            <div className=" bg-white  px-14 py-12  rounded-2xl">
+              <div className="mb-8">
+                <h3 className="mb-1 text-xl font-bold">Welcome back!</h3>
+                <p className="text-gray-600">
+                  Please enter your credentials to sign in!
+                </p>
+              </div>
 
-            <div style={{ padding: "0" }}>
-              <form onSubmit={handleLogin} style={{ marginBottom: "20px" }}>
-                <TextField
-                  label="Email"
-                  type="email"
-                  variant="outlined"
-                  fullWidth
-                  margin="normal"
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
-                />
-                <TextField
-                  label="Password"
-                  type="password"
-                  variant="outlined"
-                  fullWidth
-                  margin="normal"
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
-                />
+              <div style={{ padding: "0" }}>
+                <form onSubmit={handleLogin} style={{ marginBottom: "20px" }}>
+                  <TextField
+                    label="Email"
+                    type="email"
+                    variant="outlined"
+                    fullWidth
+                    margin="normal"
+                    value={email}
+                    onChange={(e) => setEmail(e.target.value)}
+                  />
+                  <TextField
+                    label="Password"
+                    type="password"
+                    variant="outlined"
+                    fullWidth
+                    margin="normal"
+                    value={password}
+                    onChange={(e) => setPassword(e.target.value)}
+                  />
+                  <Button
+                    type="submit"
+                    variant="contained"
+                    color="primary"
+                    fullWidth
+                  >
+                    Login
+                  </Button>
+                </form>
                 <Button
-                  type="submit"
-                  variant="contained"
-                  color="primary"
-                  fullWidth
+                  variant="text"
+                  onClick={() => navigate("/Registration")}
                 >
-                  Login
+                  Don't have an account? Register
                 </Button>
-              </form>
-              <Button variant="text" onClick={() => navigate("/Registration")}>
-                Don't have an account? Register
-              </Button>
+              </div>
             </div>
           </div>
         </div>

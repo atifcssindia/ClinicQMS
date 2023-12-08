@@ -6,8 +6,7 @@ import {
   CardContent,
   Typography,
 } from "@mui/material";
-import { io } from 'socket.io-client';
-
+import { io } from "socket.io-client";
 
 const PatientRegistrationForm = () => {
   const [name, setName] = useState("");
@@ -33,10 +32,14 @@ const PatientRegistrationForm = () => {
     const socket = io(process.env.REACT_APP_API_URL);
 
     // Listen for queue updates
-    socket.on('queueUpdated', async () => {
+    socket.on("queueUpdated", async () => {
       if (doctorId && appointmentNumber) {
         // Fetch the updated people ahead count
-        const response = await fetch(`${process.env.REACT_APP_API_URL}/peopleAhead?doctorId=${doctorId}&appointmentNumber=${appointmentNumber}&_=${new Date().getTime()}`);
+        const response = await fetch(
+          `${
+            process.env.REACT_APP_API_URL
+          }/peopleAhead?doctorId=${doctorId}&appointmentNumber=${appointmentNumber}&_=${new Date().getTime()}`
+        );
         const data = await response.json();
         setPeopleAhead(data.peopleAhead);
       }
@@ -76,7 +79,7 @@ const PatientRegistrationForm = () => {
       patient_weight: weight,
       patient_contact_number: contactNumber,
       doctor_id: doctorId,
-      gender: gender
+      gender: gender,
     };
 
     try {
@@ -118,13 +121,15 @@ const PatientRegistrationForm = () => {
 
   return (
     <div className="app-layout-blank flex flex-auto flex-col h-[100vh]">
-      <div className="grid lg:grid-cols-3 h-full">
+      <div className="flex h-full">
         <div
-          style={{
-            backgroundImage: `url("images/intro.png")`,
-          }}
-          className="bg-no-repeat bg-cover py-6 px-16 flex-col justify-between hidden lg:flex  relative"
+          // style={{
+          //   backgroundImage: `url("images/intro.png")`,
+          // }}
+          className="bg-no-repeat bg-cover py-6 px-16 flex-col justify-between hidden lg:flex  relative bg-[#2E37A4]  xl:w-5/12"
         >
+          <img src="images/pattern.png" className=" absolute  z-0 left-0" />
+          <img src="images/login-02.png" className=" absolute  z-0 left-0" />
           <div className="logo text-5xl text-white">VitalX</div>
 
           <div>
@@ -136,53 +141,52 @@ const PatientRegistrationForm = () => {
               </div>
             </div> */}
             <p className="text-lg text-white opacity-80">
-            Transform your clinic with digital efficiency in under 30 minutes.
+              Transform your clinic with digital efficiency in under 30 minutes.
             </p>
           </div>
-
-          
         </div>
 
-        <div className="col-span-2 flex flex-col justify-center items-center bg-white ">
-          <div className="xl:w-6/12 px-8">
-            <div className="mb-8">
-              <h3 className="mb-1 text-xl font-bold">Hello Patient</h3>
-              <p className="text-gray-600">Please enter your details</p>
-            </div>
-            <form onSubmit={handleSubmit}>
-              <TextField
-                label="Name"
-                variant="outlined"
-                fullWidth
-                margin="normal"
-                value={name}
-                onChange={handleNameChange}
-              />
-              <TextField
-                label="Age"
-                variant="outlined"
-                fullWidth
-                margin="normal"
-                value={age}
-                onChange={handleAgeChange}
-              />
-              <TextField
-                label="Weight"
-                variant="outlined"
-                fullWidth
-                margin="normal"
-                value={weight}
-                onChange={handleWeightChange}
-              />
-              <TextField
-                label="ContactNumber"
-                variant="outlined"
-                fullWidth
-                margin="normal"
-                value={contactNumber}
-                onChange={handleContactNumberChange}
-              />
-              <TextField
+        <div className="flex flex-col justify-center items-center  xl:w-7/12 bg-[#f5f5f6]">
+          <div className="xl:w-7/12">
+            <div className=" bg-white  px-14 py-12  rounded-2xl">
+              <div className="mb-8">
+                <h3 className="mb-1 text-xl font-bold">Hello Patient</h3>
+                <p className="text-gray-600">Please enter your details</p>
+              </div>
+              <form onSubmit={handleSubmit}>
+                <TextField
+                  label="Name"
+                  variant="outlined"
+                  fullWidth
+                  margin="normal"
+                  value={name}
+                  onChange={handleNameChange}
+                />
+                <TextField
+                  label="Age"
+                  variant="outlined"
+                  fullWidth
+                  margin="normal"
+                  value={age}
+                  onChange={handleAgeChange}
+                />
+                <TextField
+                  label="Weight"
+                  variant="outlined"
+                  fullWidth
+                  margin="normal"
+                  value={weight}
+                  onChange={handleWeightChange}
+                />
+                <TextField
+                  label="ContactNumber"
+                  variant="outlined"
+                  fullWidth
+                  margin="normal"
+                  value={contactNumber}
+                  onChange={handleContactNumberChange}
+                />
+                <TextField
                   select
                   label="Gender"
                   value={gender}
@@ -197,31 +201,37 @@ const PatientRegistrationForm = () => {
                   <option value="M">Male</option>
                   <option value="F">Female</option>
                   <option value="O">Other</option>
-              </TextField>
-              <Button type="submit" variant="contained" color="primary" disabled={isRegistering || registrationCompleted}>
-                Register
-              </Button>
-            </form>
-            {appointmentNumber && (
-              <Card style={{ marginTop: 20 }}>
-                <CardContent>
-                  <Typography variant="h5" component="div">
-                    Appointment Number
-                  </Typography>
-                  <Typography variant="h4" color="primary">
-                    {appointmentNumber}
-                  </Typography>
-                  <Typography variant="body2">
-                    Please wait for your turn.
-                  </Typography>
-                </CardContent>
-              </Card>
-            )}
-            {peopleAhead != null && (
-              <Typography variant="body2">
-                {peopleAhead} people ahead of you.
-              </Typography>
-      )}
+                </TextField>
+                <Button
+                  type="submit"
+                  variant="contained"
+                  color="primary"
+                  disabled={isRegistering || registrationCompleted}
+                >
+                  Register
+                </Button>
+              </form>
+              {appointmentNumber && (
+                <Card style={{ marginTop: 20 }}>
+                  <CardContent>
+                    <Typography variant="h5" component="div">
+                      Appointment Number
+                    </Typography>
+                    <Typography variant="h4" color="primary">
+                      {appointmentNumber}
+                    </Typography>
+                    <Typography variant="body2">
+                      Please wait for your turn.
+                    </Typography>
+                  </CardContent>
+                </Card>
+              )}
+              {peopleAhead != null && (
+                <Typography variant="body2">
+                  {peopleAhead} people ahead of you.
+                </Typography>
+              )}
+            </div>
           </div>
         </div>
       </div>

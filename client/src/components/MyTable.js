@@ -9,9 +9,17 @@ const MyTable = ({ columns, data }) => {
     <table {...getTableProps()} style={{ borderSpacing: "0", width: "100%" }}>
       <thead>
         {headerGroups.map((headerGroup) => (
-          <tr {...headerGroup.getHeaderGroupProps()}>
+          <tr
+            className="border-b-2 border-gray-200"
+            {...headerGroup.getHeaderGroupProps()}
+          >
             {headerGroup.headers.map((column) => (
-              <th {...column.getHeaderProps()}>{column.render("Header")}</th>
+              <th
+                className=" text-left py-3.5 px-5 text-gray-800 font-semibold "
+                {...column.getHeaderProps()}
+              >
+                {column.render("Header")}
+              </th>
             ))}
           </tr>
         ))}
@@ -20,9 +28,17 @@ const MyTable = ({ columns, data }) => {
         {rows.map((row) => {
           prepareRow(row);
           return (
-            <tr {...row.getRowProps()}>
+            <tr
+              className=" odd:border-b even:border-b border-gray-100"
+              {...row.getRowProps()}
+            >
               {row.cells.map((cell) => (
-                <td {...cell.getCellProps()}>{cell.render("Cell")}</td>
+                <td
+                  className=" text-left py-3.5 px-5  font-medium text-gray-700 text-[15px]"
+                  {...cell.getCellProps()}
+                >
+                  {cell.render("Cell")}
+                </td>
               ))}
             </tr>
           );
