@@ -5,14 +5,14 @@ const Header = (props: any) => {
   const { isSidebarOpen, toggleSidebar } = useSidebar();
 
   return (
-    <header className="header shadow  bg-gradient-to-r from-blue-400  to-blue-500 ">
-      <div className="header-wrapper h-16 flex justify-between items-center px-5">
+    <header className="header  shadow-md shadow-gray-200  bg-gradient-to-r bg-white border-l border-gray-100 ">
+      <div className="header-wrapper h-[70px] flex justify-between items-center px-5">
         <div className="header-action header-action-start">
           <div
-            className="m-1/4 cursor-pointer rounded-full p-2 hover:bg-blue-600 ease-in-out duration-100"
+            className="m-1/4 cursor-pointer rounded-full p-2 hover:bg-[#eee] ease-in-out duration-100"
             onClick={toggleSidebar}
           >
-            <div className="text-2xl text-white">
+            <div className="text-2xl text-[#2E37A4]">
               {isSidebarOpen ? (
                 <svg
                   stroke="currentColor"
@@ -52,12 +52,20 @@ const Header = (props: any) => {
           </div>
         </div>
 
-        <div className="header-action header-action-end inline-flex items-center">
-          <div className="m-1/4 cursor-pointer rounded-full p-2 text-white font-semibold text-sm">
-            Carolyn Perkins
+        <div className="header-action header-action-end  inline-flex items-center gap-x-5">
+          <div className="inline-flex items-center">
+            <div className="m-1/4 cursor-pointer rounded-full p-2 text-[#2E37A4] font-semibold text-lg">
+              Carolyn Perkins
+            </div>
+            <div className="m-1/4 cursor-pointer rounded-full p-2">
+              <AvatarMy />
+            </div>
           </div>
-          <div className="m-1/4 cursor-pointer rounded-full p-2">
-            <AvatarMy />
+
+          <div className="inline-flex items-center">
+            <a className=" w-10 h-10 inline-flex justify-center items-center rounded-full hover:bg-gray-100  cursor-pointer">
+              <img src="images/icons/setting-icon-01.svg" />
+            </a>
           </div>
         </div>
       </div>
