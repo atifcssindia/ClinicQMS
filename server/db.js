@@ -28,7 +28,8 @@ const getDoctorIdFromUserId = async (userId) => {
 
 const getTodaysAppointments = async (userId, date = new Date()) => {
   const doctorId = await getDoctorIdFromUserId(userId);
-  const formattedDate = date.toISOString().split('T')[0];
+  const currentDate = getCurrentDateIST(); // Use the same function to get the date in IST
+  const formattedDate = date ? date.toISOString().split('T')[0] : currentDate;
 
   const query = `
     SELECT
@@ -60,22 +61,27 @@ const getTodaysAppointments = async (userId, date = new Date()) => {
   }
 };
 
-
+const getCurrentDateIST = () => {
+  const now = new Date();
+  now.setMinutes(now.getMinutes() + now.getTimezoneOffset() + 330); // Adding 330 minutes (5 hours 30 minutes) to convert to IST
+  return now.toISOString().slice(0, 10);
+};
 
 const getNextAppointmentNumber = async (doctorId) => {
-  const currentDate = new Date().toISOString().slice(0, 10); // Format as YYYY-MM-DD
+  const currentDate = getCurrentDateIST(); // Format as YYYY-MM-DD
   const res = await pool.query(
     'SELECT COUNT(*) FROM Appointment WHERE doctor_id = $1 AND date_time::date = $2',
     [doctorId, currentDate]
   );
   const nextNumber = parseInt(res.rows[0].count) + 1;
+  console.log(currentDate);
   return nextNumber;
 }
 
 const insertAppointment = async (patientId, doctorId) => {
   const appointmentNumber = await getNextAppointmentNumber(doctorId);
   const res = await pool.query(
-    'INSERT INTO Appointment(patient_id, doctor_id, date_time, status, appointment_number) VALUES($1, $2, NOW(), 0, $3) RETURNING *',
+    'INSERT INTO Appointment(patient_id, doctor_id, date_time, status, appointment_number) VALUES($1, $2, (NOW() AT TIME ZONE \'UTC\') AT TIME ZONE \'Asia/Kolkata\', 0, $3) RETURNING *',
     [patientId, doctorId, appointmentNumber]
   );
 
