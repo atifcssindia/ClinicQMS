@@ -28,8 +28,7 @@ const getDoctorIdFromUserId = async (userId) => {
 
 const getTodaysAppointments = async (userId, date = new Date()) => {
   const doctorId = await getDoctorIdFromUserId(userId);
-  const currentDate = getCurrentDateIST(); // Use the same function to get the date in IST
-  const formattedDate = date ? date.toISOString().split('T')[0] : currentDate;
+  const formattedDate = date.toISOString().split('T')[0]; // This will be in IST
 
   const query = `
     SELECT
@@ -61,14 +60,9 @@ const getTodaysAppointments = async (userId, date = new Date()) => {
   }
 };
 
-const getCurrentDateIST = () => {
-  const now = new Date();
-  now.setMinutes(now.getMinutes() + now.getTimezoneOffset() + 330); // Adding 330 minutes (5 hours 30 minutes) to convert to IST
-  return now.toISOString().slice(0, 10);
-};
 
 const getNextAppointmentNumber = async (doctorId) => {
-  const currentDate = getCurrentDateIST(); // Format as YYYY-MM-DD
+  const currentDate = new Date().toISOString().slice(0, 10);
   const res = await pool.query(
     'SELECT COUNT(*) FROM Appointment WHERE doctor_id = $1 AND date_time::date = $2',
     [doctorId, currentDate]
@@ -81,7 +75,7 @@ const getNextAppointmentNumber = async (doctorId) => {
 const insertAppointment = async (patientId, doctorId) => {
   const appointmentNumber = await getNextAppointmentNumber(doctorId);
   const res = await pool.query(
-    'INSERT INTO Appointment(patient_id, doctor_id, date_time, status, appointment_number) VALUES($1, $2, (NOW() AT TIME ZONE \'UTC\') AT TIME ZONE \'Asia/Kolkata\', 0, $3) RETURNING *',
+    'INSERT INTO Appointment(patient_id, doctor_id, date_time, status, appointment_number) VALUES($1, $2, NOW(), 0, $3) RETURNING *',
     [patientId, doctorId, appointmentNumber]
   );
 
@@ -104,27 +98,26 @@ const findUserByPhoneNumber = async (phoneNumber) => {
 };
 
 const storeOTP = async (phoneNumber, otp) => {
-  // Adjust CURRENT_TIMESTAMP to IST and set expires_at to 5 minutes later in IST
   const query = `
     INSERT INTO otp (mobile_number, otp_sent, created_at, expires_at) 
     VALUES (
       $1, 
       $2, 
-      (CURRENT_TIMESTAMP AT TIME ZONE 'UTC') AT TIME ZONE 'Asia/Kolkata', 
-      ((CURRENT_TIMESTAMP AT TIME ZONE 'UTC') AT TIME ZONE 'Asia/Kolkata') + INTERVAL '5 minutes'
+      CURRENT_TIMESTAMP,
+      CURRENT_TIMESTAMP + INTERVAL '5 minutes' 
     )
   `;
   await pool.query(query, [phoneNumber, otp]);
 };
 
 
+
 const verifyOTP = async (phoneNumber, otp) => {
-  // Convert CURRENT_TIMESTAMP to IST
   const query = `
     SELECT otp_sent 
     FROM otp 
     WHERE mobile_number = $1 
-      AND expires_at > (CURRENT_TIMESTAMP AT TIME ZONE 'UTC') AT TIME ZONE 'Asia/Kolkata'
+      AND expires_at > CURRENT_TIMESTAMP
       AND validated = FALSE
   `;
 
