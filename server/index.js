@@ -76,7 +76,8 @@ const generateOTP = () => {
 
 app.post('/generateOTP', async (req, res) => {
   const { phoneNumber } = req.body;
-  const otp = generateOTP();
+  // const otp = generateOTP();
+  const otp = 1234;
 
   try {
     await storeOTP(phoneNumber, otp);
@@ -188,7 +189,8 @@ app.post('/auth/register', async (req, res) => {
     }
 
     // Create a token
-    const token = jwt.sign({ user_id: user.user_id, role }, process.env.JWT_SECRET, { expiresIn: '1h' });
+    const doctorId= await getDoctorIdFromUserId(user.user_id);
+    const token = jwt.sign({ user_id: user.user_id, role,doctor_id: doctorId }, process.env.JWT_SECRET, { expiresIn: '1h' });
 
     // Respond with the token and user info
     res.status(201).json({ token, user, doctor }); // doctor will be undefined if role is not 'doctor'
@@ -198,13 +200,28 @@ app.post('/auth/register', async (req, res) => {
   }
 });
 
+app.get('/getDoctorId', async (req, res) => {
+  const { userId } = req.query;
+  try {
+    const doctorId = await getDoctorIdFromUserId(userId);
+    if (doctorId) {
+      res.json({ doctorId });
+    } else {
+      res.status(404).send('Doctor not found for the given user ID');
+    }
+  } catch (error) {
+    console.error('Error fetching doctor ID:', error);
+    res.status(500).send('Server error');
+  }
+});
 
 app.post('/auth/login', async (req, res) => {
   const { email, password } = req.body;
   try {
     const user = await findUserByEmail(email);
+    const doctorId=await getDoctorIdFromUserId(user.user_id);
     if (user && await bcrypt.compare(password, user.hashed_password)) {
-      const token = jwt.sign({ user_id: user.user_id, role: user.role }, process.env.JWT_SECRET, { expiresIn: '1h' });
+      const token = jwt.sign({ user_id: user.user_id, role: user.role, doctor_id: doctorId }, process.env.JWT_SECRET, { expiresIn: '1h' });
       res.json({ token, role: user.role });
     } else {
       res.status(401).send('Invalid credentials');

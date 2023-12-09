@@ -41,6 +41,7 @@ const DoctorView = () => {
   const handleNextPatient = async () => {
     const token = localStorage.getItem("token");
     const decodedToken = jwtDecode(token);
+    console.log(decodedToken);
 
     try {
       const response = await fetch(
