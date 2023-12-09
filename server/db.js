@@ -118,7 +118,6 @@ const verifyOTP = async (phoneNumber, otp) => {
     FROM otp 
     WHERE mobile_number = $1 
       AND expires_at > CURRENT_TIMESTAMP
-      AND validated = FALSE
   `;
 
   const { rows } = await pool.query(query, [phoneNumber]);
