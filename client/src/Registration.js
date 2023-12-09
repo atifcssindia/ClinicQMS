@@ -13,6 +13,7 @@ const Registration = () => {
   const [phoneNumber, setPhoneNumber] = useState('');
   const [otp, setOtp] = useState('');
   const [isOtpVerified, setIsOtpVerified] = useState(false);
+  const [step, setStep] = useState(1);
   // const [qrCodeUrl, setQrCodeUrl] = useState('');
 
   const handleSendOtp = async () => {
@@ -26,7 +27,7 @@ const Registration = () => {
           phoneNumber: phoneNumber, // replace this with the actual state variable you have for phoneNumber
         }),
       });
-  
+      setStep(2);
       const data = await response.json();
   
       if (data.success) {
@@ -57,7 +58,7 @@ const Registration = () => {
         },
         body: JSON.stringify(otpPayload),
       });
-  
+      setStep(3);
       const data = await response.json();
   
       if (data.success) {
@@ -165,6 +166,29 @@ const Registration = () => {
             </div>
 
             <div style={{ padding: "0" }}>
+            {step === 1 && (
+                <div>
+                  <TextField
+                    label="Phone Number"
+                    value={phoneNumber}
+                    onChange={(e) => setPhoneNumber(e.target.value)}
+                  />
+                  <Button onClick={handleSendOtp}>Send OTP</Button>
+                  </div>
+                  )}
+            {step === 2 && (
+              <div>
+                  <TextField
+                    label="Enter OTP"
+                    value={otp}
+                    onChange={(e) => setOtp(e.target.value)}
+                  />
+                  <Button onClick={handleVerifyOtp}>Verify OTP</Button>
+                
+                
+                </div>
+                )}
+                {step === 3 && (
               <form onSubmit={handleRegister} style={{ marginBottom: "20px" }}>
                 <TextField
                   label="Email"
@@ -209,23 +233,13 @@ const Registration = () => {
                   value={clinicName}
                   onChange={(e) => setClinicName(e.target.value)}
                 />
-                  <TextField
-                    label="Phone Number"
-                    value={phoneNumber}
-                    onChange={(e) => setPhoneNumber(e.target.value)}
-                  />
-                  <Button onClick={handleSendOtp}>Send OTP</Button>
-                  <TextField
-                    label="Enter OTP"
-                    value={otp}
-                    onChange={(e) => setOtp(e.target.value)}
-                  />
-                  <Button onClick={handleVerifyOtp}>Verify OTP</Button>
 
                 <Button type="submit" variant="contained" color="primary" disabled={!isOtpVerified}>
                   Register
                 </Button>
+                
               </form>
+              )}
             </div>
           </div>
         </div>
