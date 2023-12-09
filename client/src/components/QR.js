@@ -13,7 +13,7 @@ const QR = () => {
       const token = localStorage.getItem("token");
       const decodedToken = jwtDecode(token);
       const userId = decodedToken.user_id;
-
+  
       try {
         const response = await fetch(`${process.env.REACT_APP_API_URL}/getDoctorId?userId=${userId}`);
         if (!response.ok) {
@@ -21,14 +21,21 @@ const QR = () => {
         }
         const data = await response.json();
         setDoctorId(data.doctorId);
-        console.log(doctorId);
       } catch (error) {
         console.error('There has been a problem with your fetch operation:', error);
       }
     };
-
+  
     fetchDoctorId();
+    // Since we're only interested in running this effect on mount, the dependency array is empty
   }, []);
+  
+  // Separate useEffect for logging doctorId
+  useEffect(() => {
+    if (doctorId !== undefined) { // Assuming the initial state for doctorId is undefined
+      console.log(doctorId);
+    }
+  }, [doctorId]);
 
   const handlePrint = () => {
     const qrCodeElement = document.getElementById("printableQRCode");
