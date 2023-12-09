@@ -178,7 +178,7 @@ const DoctorView = () => {
                   "
                   placeholder="Search here"
                 />
-                <a className=" absolute left-2.5 top-2.5" href="">
+                <a className=" absolute left-2.5 top-2.5" href="https://www.app.vitalx.in">
                   <img src="images/icons/search-normal.svg" alt="" />
                 </a>
               </form>
