@@ -143,8 +143,8 @@ const Login = () => {
           // }}
           className="bg-no-repeat bg-cover py-6 px-16 flex-col justify-between hidden lg:flex  relative bg-[#2E37A4]  xl:w-5/12"
         >
-          <img src="images/pattern.png" className=" absolute  z-0 left-0" />
-          <img src="images/login-02.png" className=" absolute  z-0 left-0" />
+          <img src="images/pattern.png" className=" absolute  z-0 left-0" alt=""/>
+          <img src="images/login-02.png" className=" absolute  z-0 left-0"alt=""/>
           <div className="logo text-5xl text-white">VitalX</div>
 
           <div>

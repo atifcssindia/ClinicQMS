@@ -1,9 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { jwtDecode } from "jwt-decode";
-// import AppointmentsTable from "./AppointmentsTable";
-import { Button, Link, Typography } from "@mui/material";
-
 import { io } from "socket.io-client";
 import AdminLayout from "./AdminLayout";
 import MyTable from "./components/MyTable";
@@ -182,7 +179,7 @@ const DoctorView = () => {
                   placeholder="Search here"
                 />
                 <a className=" absolute left-2.5 top-2.5">
-                  <img src="images/icons/search-normal.svg" alt="" />
+                  <img src="images/icons/search-normal.svg" alt="" href=""/>
                 </a>
               </form>
             </div>
