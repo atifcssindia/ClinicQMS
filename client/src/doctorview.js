@@ -178,8 +178,8 @@ const DoctorView = () => {
                   "
                   placeholder="Search here"
                 />
-                <a className=" absolute left-2.5 top-2.5">
-                  <img src="images/icons/search-normal.svg" alt="" href=""/>
+                <a className=" absolute left-2.5 top-2.5" href="">
+                  <img src="images/icons/search-normal.svg" alt="" />
                 </a>
               </form>
             </div>
