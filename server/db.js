@@ -103,12 +103,20 @@ const findUserByPhoneNumber = async (phoneNumber) => {
   return rows[0]; // This will be undefined if the user is not found
 };
 
-// Assuming you have added a phone_number field to your users table
 const storeOTP = async (phoneNumber, otp) => {
-  const query = 'INSERT INTO otp (mobile_number, otp_sent, created_at, expires_at) VALUES ($1, $2, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP + INTERVAL \'5 minutes\')';
+  // Adjust CURRENT_TIMESTAMP to IST and set expires_at to 5 minutes later in IST
+  const query = `
+    INSERT INTO otp (mobile_number, otp_sent, created_at, expires_at) 
+    VALUES (
+      $1, 
+      $2, 
+      (CURRENT_TIMESTAMP AT TIME ZONE 'UTC') AT TIME ZONE 'Asia/Kolkata', 
+      ((CURRENT_TIMESTAMP AT TIME ZONE 'UTC') AT TIME ZONE 'Asia/Kolkata') + INTERVAL '5 minutes'
+    )
+  `;
   await pool.query(query, [phoneNumber, otp]);
-  // No return value required unless you need a confirmation
 };
+
 
 const verifyOTP = async (phoneNumber, otp) => {
   // Convert CURRENT_TIMESTAMP to IST
