@@ -111,7 +111,15 @@ const storeOTP = async (phoneNumber, otp) => {
 };
 
 const verifyOTP = async (phoneNumber, otp) => {
-  const query = 'SELECT otp_sent FROM otp WHERE mobile_number = $1 AND expires_at > CURRENT_TIMESTAMP AND validated = FALSE';
+  // Convert CURRENT_TIMESTAMP to IST
+  const query = `
+    SELECT otp_sent 
+    FROM otp 
+    WHERE mobile_number = $1 
+      AND expires_at > (CURRENT_TIMESTAMP AT TIME ZONE 'UTC') AT TIME ZONE 'Asia/Kolkata'
+      AND validated = FALSE
+  `;
+
   const { rows } = await pool.query(query, [phoneNumber]);
 
   if (rows.length > 0 && rows[0].otp_sent === otp) {
