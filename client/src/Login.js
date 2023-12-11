@@ -169,7 +169,7 @@ const Login = () => {
           </div>
         </div>
 
-        <div className="flex flex-col  lg:justify-center items-center w-full  xl:w-7/12 bg-[#f5f5f6]">
+        <div className="flex flex-col  lg:justify-center items-center w-full  xl:w-7/12 bg-[#f5f5f6] pt-5 xl:pt-0">
           <div className="xl:w-7/12 px-5">
             <div className=" bg-white  px-8 md:px-10 xl:px-14 py-12  rounded-2xl">
               <div className="mb-8">
