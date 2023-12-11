@@ -63,6 +63,33 @@ const DoctorView = () => {
     }
   };
 
+  const handleCheckIn = async (appointmentId) => {
+    const token = localStorage.getItem("token");
+    const decodedToken = jwtDecode(token);
+
+    try {
+      const response = await fetch(
+        `${process.env.REACT_APP_API_URL}/appointments/checkin/${appointmentId}`, // Adjust the URL according to your API endpoint
+        {
+          method: "POST", // or PUT, depending on your API design
+          headers: {
+            Authorization: `Bearer ${token}`,
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ userId: decodedToken.user_id }), // Include any other necessary data
+        }
+      );
+
+      if (response.ok) {
+        await fetchAppointments(decodedToken); // Re-fetch appointments after updating the status
+      } else {
+        console.error("Failed to check in the patient", response);
+      }
+    } catch (error) {
+      console.error("Error checking in the patient:", error);
+    }
+  };
+
   useEffect(() => {
     const token = localStorage.getItem("token");
 
@@ -139,13 +166,22 @@ const DoctorView = () => {
     },
     {
       Header: "Check-in",
-      accessor: "checkin",
-      Cell: ({ value }) => {
-        return (
-          <button className=" px-2.5 py-1 bg-[#2E37A4] rounded-md shadow-lg text-[12px] xl:text-sm text-white cursor-pointer hover:bg-[#1a238f]">
-            Check in
-          </button>
-        );
+      accessor: "checkin", // This can be a dummy accessor since the actual functionality will be in the Cell
+      Cell: ({ row }) => {
+        // Check if the status of the patient is 'waiting'
+        if (row.original.status === "waiting") {
+          // Render the check-in button
+          return (
+            <button
+              className=" px-2.5 py-1 bg-[#2E37A4] rounded-md shadow-lg text-[12px] xl:text-sm text-white cursor-pointer hover:bg-[#1a238f]"
+              onClick={() => handleCheckIn(row.original.id)}
+            >
+              Check-in
+            </button>
+          );
+        }
+        // If the patient is not waiting, you can return null or some placeholder
+        return null;
       },
     },
     // Add more columns as needed
@@ -198,8 +234,13 @@ const DoctorView = () => {
               </form>
             </div>
           </div>
+
           <div className=" overflow-auto">
-            <MyTable columns={columns} data={appointments} />
+            <MyTable
+              columns={columns}
+              data={appointments}
+              onCheckIn={handleCheckIn}
+            />
           </div>
           {/* Render the table */}
           <div className="px-5 py-5">

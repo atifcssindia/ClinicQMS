@@ -1,8 +1,23 @@
+import { useEffect, useState } from "react";
 import AvatarMy from "./AvatarMy";
 import { useSidebar } from "./../services/SidebarContext";
+import { jwtDecode } from "jwt-decode";
 
-const Header = (props: any) => {
+const Header = (props) => {
   const { isSidebarOpen, toggleSidebar } = useSidebar();
+  const [doctorName, setDoctorName]=useState('');
+
+  useEffect(() => {
+
+    const fetchDoctorId = async () => {
+      const token = localStorage.getItem("token");
+      const decodedToken = jwtDecode(token);
+      console.log(decodedToken);
+        setDoctorName(decodedToken.doctorName);
+    };
+  
+    fetchDoctorId();
+  }, []);
 
   return (
     <header className="header  shadow-md shadow-gray-200  bg-gradient-to-r bg-white border-l border-gray-100 ">
@@ -55,7 +70,7 @@ const Header = (props: any) => {
         <div className="header-action header-action-end  inline-flex items-center gap-x-5">
           <div className="inline-flex items-center">
             <div className="m-1/4 cursor-pointer rounded-full p-2 text-[#2E37A4] font-semibold text-lg">
-              Carolyn Perkins
+{doctorName}
             </div>
             <div className="m-1/4 cursor-pointer rounded-full p-2">
               <AvatarMy />

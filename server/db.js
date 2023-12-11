@@ -22,13 +22,29 @@ const getDoctorIdFromUserId = async (userId) => {
     'SELECT doctor_id FROM doctor WHERE user_id = $1',
     [userId]
   );
-  
   return res.rows[0].doctor_id;
 };
 
+const getDoctorNameFromDoctorId = async (doctorId) => {
+  const res = await pool.query(
+    'SELECT doctor_name FROM doctor WHERE doctor_id = $1',
+    [doctorId]
+  );
+  return res.rows[0].doctor_name;
+};
+
 const getTodaysAppointments = async (userId, date = new Date()) => {
+  // Convert server time (GMT) to IST (GMT+5:30)
+  const istOffset = 5.5 * 60 * 60 * 1000; // 5.5 hours in milliseconds
+  const istDate = new Date(date.getTime() + istOffset);
+
+  // Format the date for the query
+  const formattedDate = istDate.toISOString().split('T')[0]; // IST date in 'YYYY-MM-DD' format
+
+  // Log the adjusted IST date for verification
+  console.log('Fetching appointments for IST date:', formattedDate);
+
   const doctorId = await getDoctorIdFromUserId(userId);
-  const formattedDate = date.toISOString().split('T')[0]; // This will be in IST
 
   const query = `
     SELECT
@@ -214,6 +230,11 @@ const setNextPatientStatus = async (doctorId) => {
   return nextAppointmentId; // Return this for confirmation or further processing if needed
 };
 
+const updateAppointmentStatus = async (appointmentId, newStatus) => {
+  console.log('lo: ',appointmentId, newStatus);
+  const query = 'UPDATE appointment SET status = $1 WHERE appointment_number = $2';
+  await pool.query(query, [newStatus, appointmentId]);
+};
 
 
 const updateAppointmentStatuses = async (doctorId) => {
@@ -253,4 +274,4 @@ const updateAppointmentStatuses = async (doctorId) => {
 
 
 
-module.exports = { insertPatient,getTodaysAppointments, insertAppointment, findPatientByContactNumber, insertDoctor, updateDoctorQRCode,insertUser, findUserByEmail, setNextPatientStatus ,setPatientStatusTreated,getDoctorIdFromUserId,updateAppointmentStatuses,getPeopleAheadCount,storeOTP, verifyOTP, findUserByPhoneNumber};
+module.exports = { insertPatient,getTodaysAppointments, updateAppointmentStatus,insertAppointment, findPatientByContactNumber, insertDoctor, updateDoctorQRCode,insertUser, findUserByEmail, setNextPatientStatus ,setPatientStatusTreated,getDoctorIdFromUserId,updateAppointmentStatuses,getPeopleAheadCount,storeOTP, verifyOTP, findUserByPhoneNumber,getDoctorNameFromDoctorId};

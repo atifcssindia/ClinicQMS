@@ -8,6 +8,8 @@ const Login = () => {
   const [otp, setOtp] = useState("");
   const [phoneNumber, setPhoneNumber] = useState("");
   const [showOtpForm, setShowOtpForm] = useState(false);
+  const [otpSent, setOtpSent] = useState(false);
+
   const navigate = useNavigate();
 
   const handleLogin = async (event) => {
@@ -72,7 +74,7 @@ const Login = () => {
       const data = await response.json();
 
       if (data.success) {
-        console.log(data.message);
+        setOtpSent(true); // Set otpSent to true when OTP is successfully sent
         // Handle UI changes, like showing an input field for entering OTP
       } else {
         // Handle the case where OTP sending failed
@@ -248,25 +250,29 @@ const Login = () => {
                     onChange={(e) => setPhoneNumber(e.target.value)}
                     margin="normal"
                     fullWidth
-                  /> */}
-                  {/* <Button onClick={handleSendOtp} variant="contained" fullWidth>
-                    Send OTP
-                  </Button> */}
-                  {/* <TextField
-                    label="OTP"
-                    value={otp}
-                    onChange={(e) => setOtp(e.target.value)}
-                    margin="normal"
-                    fullWidth
                   />
-                  <Button
-                    onClick={handleVerifyOtp}
-                    variant="contained"
-                    fullWidth
-                  >
-                    Verify OTP
-                  </Button> */}
-                  {/* <Button variant="text" onClick={handleToggleOtpForm}>
+                  <Button onClick={handleSendOtp} variant="contained" fullWidth disabled={otpSent}>
+                    Send OTP
+                  </Button>
+                  {otpSent && ( // Conditionally render these fields
+                    <>
+                      <TextField
+                        label="OTP"
+                        value={otp}
+                        onChange={(e) => setOtp(e.target.value)}
+                        margin="normal"
+                        fullWidth
+                      />
+                      <Button
+                        onClick={handleVerifyOtp}
+                        variant="contained"
+                        fullWidth
+                      >
+                        Verify OTP
+                      </Button>
+                    </>
+                  )}
+                  <Button variant="text" onClick={handleToggleOtpForm}>
                     Back to Email/Password
                   </Button> */}
                 </>
