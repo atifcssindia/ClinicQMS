@@ -23,6 +23,8 @@ const PatientRegistrationForm = () => {
   const [otp, setOtp] = useState("");
   const [patientDetails, setPatientDetails] = useState("");
   const [otpVerified, setOtpVerified] = useState(false);
+  const [errorMessage, setErrorMessage] = useState(""); // New state for error messages
+
 
   useEffect(() => {
     // Extract doctorId from URL query parameters
@@ -53,6 +55,27 @@ const PatientRegistrationForm = () => {
     return () => socket.disconnect();
   }, [doctorId, appointmentNumber]);
 
+
+
+  const isValidPhoneNumber = (number) => {
+    return /^\d{10}$/.test(number); // Regex to check for a 10-digit number
+  };
+  
+  const isValidOTP = (otp) => {
+    return /^\d{4}$/.test(otp); // Regex for 4-digit OTP
+  };
+  
+  const isNumeric = (value) => {
+    return /^\d+$/.test(value); // Regex to check for numeric value
+  };
+  
+  const allFieldsFilled = () => {
+    return (
+      name && age && weight && contactNumber && gender && otp
+    );
+  };
+
+
   const handleNameChange = (event) => {
     setName(event.target.value);
   };
@@ -62,20 +85,30 @@ const PatientRegistrationForm = () => {
   };
 
   const handleAgeChange = (event) => {
-    setAge(event.target.value);
+    if (isNumeric(event.target.value)) {
+      setAge(event.target.value);
+    }
   };
-
+  
   const handleWeightChange = (event) => {
-    setWeight(event.target.value);
+    if (isNumeric(event.target.value)) {
+      setWeight(event.target.value);
+    }
   };
+  
 
   const handleContactNumberChange = (event) => {
-    setContactNumber(event.target.value);
+    const input = event.target.value;
+    // Allow input if it's numeric and up to 10 digits long
+    if (input === '' || (isNumeric(input) && input.length <= 10)) {
+      setContactNumber(input);
+    }
   };
 
   const handleSubmit = async (event) => {
     event.preventDefault(); // Preventt the default form submit action
     setIsRegistering(true);
+    setErrorMessage("");
 
     const patientData = {
       patient_name: name,
@@ -121,9 +154,24 @@ const PatientRegistrationForm = () => {
     } finally {
       setIsRegistering(false);
     }
+
+    if (!allFieldsFilled()) {
+      setErrorMessage("Please fill in all fields correctly.");
+      setIsRegistering(false);
+      return;
+    }
   };
 
   const handleSendOtp = async () => {
+    // Check if the phone number is valid
+    if (!isValidPhoneNumber(contactNumber)) {
+      setErrorMessage("Please enter a valid 10-digit phone number.");
+      return; // Exit the function if the phone number is not valid
+    }
+  
+    setErrorMessage(""); // Clear any previous error messages
+  
+    // Proceed with sending OTP
     try {
       const response = await fetch(
         `${process.env.REACT_APP_API_URL}/generateOTP`,
@@ -133,23 +181,27 @@ const PatientRegistrationForm = () => {
           body: JSON.stringify({ phoneNumber: contactNumber }),
         }
       );
+  
       const data = await response.json();
-
       if (data.success) {
         setOtpSent(true); // Update state for UI change
       } else {
-        // Handle error
+        // Handle error in sending OTP
         console.error("Error sending OTP");
-        // Show error message to the user
+        setErrorMessage("Error in sending OTP. Please try again.");
       }
     } catch (error) {
       // Handle network or other errors
-      console.error(error);
-      // Show error message to the user
+      console.error("Network error:", error);
+      setErrorMessage("Network error. Please try again.");
     }
   };
 
   const handleVerifyOtp = async () => {
+    // Clear any previous error messages
+    setErrorMessage("");
+  
+    // Proceed with OTP verification
     try {
       const response = await fetch(
         `${process.env.REACT_APP_API_URL}/verifyOTP`,
@@ -159,8 +211,9 @@ const PatientRegistrationForm = () => {
           body: JSON.stringify({ phoneNumber: contactNumber, otp }),
         }
       );
+  
       const data = await response.json();
-      console.log(data);
+  
       if (data.success) {
         setOtpVerified(true);
         setPatientDetails(data.patientExists);
@@ -174,12 +227,12 @@ const PatientRegistrationForm = () => {
       } else {
         // Handle invalid OTP
         console.error("Invalid OTP");
-        // Show error message to the user
+        setErrorMessage("Invalid OTP. Please try again.");
       }
     } catch (error) {
       // Handle network or other errors
-      console.error(error, patientDetails);
-      // Show error message to the user
+      console.error(error);
+      setErrorMessage("Error verifying OTP. Please try again.");
     }
   };
 
@@ -337,6 +390,13 @@ const PatientRegistrationForm = () => {
           </div>
         </div>
       </div>
+
+      {errorMessage && (
+        <div className="error-message" style={{ color: 'red' }}>
+          {errorMessage}
+        </div>
+      )}
+
     </div>
   );
 };
