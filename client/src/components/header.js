@@ -77,7 +77,7 @@ const Header = (props) => {
             </div>
           </div>
 
-          <div className="inline-flex items-center">
+          <div className="inline-flex items-center hidden">
             <button className="w-10 h-10 inline-flex justify-center items-center rounded-full hover:bg-gray-100 cursor-pointer">
               <img src="images/icons/setting-icon-01.svg" alt="Settings" />
             </button>
