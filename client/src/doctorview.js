@@ -68,27 +68,27 @@ const DoctorView = () => {
     const decodedToken = jwtDecode(token);
 
     try {
-        const response = await fetch(
-            `${process.env.REACT_APP_API_URL}/appointments/checkin/${appointmentId}`, // Adjust the URL according to your API endpoint
-            {
-                method: "POST", // or PUT, depending on your API design
-                headers: {
-                    Authorization: `Bearer ${token}`,
-                    "Content-Type": "application/json",
-                },
-                body: JSON.stringify({ userId: decodedToken.user_id }), // Include any other necessary data
-            }
-        );
-
-        if (response.ok) {
-            await fetchAppointments(decodedToken); // Re-fetch appointments after updating the status
-        } else {
-            console.error("Failed to check in the patient", response);
+      const response = await fetch(
+        `${process.env.REACT_APP_API_URL}/appointments/checkin/${appointmentId}`, // Adjust the URL according to your API endpoint
+        {
+          method: "POST", // or PUT, depending on your API design
+          headers: {
+            Authorization: `Bearer ${token}`,
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ userId: decodedToken.user_id }), // Include any other necessary data
         }
+      );
+
+      if (response.ok) {
+        await fetchAppointments(decodedToken); // Re-fetch appointments after updating the status
+      } else {
+        console.error("Failed to check in the patient", response);
+      }
     } catch (error) {
-        console.error("Error checking in the patient:", error);
+      console.error("Error checking in the patient:", error);
     }
-};
+  };
 
   useEffect(() => {
     const token = localStorage.getItem("token");
@@ -133,7 +133,6 @@ const DoctorView = () => {
     };
   }, []);
 
-
   if (!isLoggedIn) {
     // Render nothing or a loading indicator while checking for token and role
     return null; // or <LoadingIndicator />;
@@ -150,7 +149,7 @@ const DoctorView = () => {
         if (value === "Completed") {
           // Render custom HTML for "Indore"
           return (
-            <span className="bg-green-100 text-green-800 text-sm font-medium me-2 px-2.5 py-0.5 rounded dark:bg-green-900 dark:text-green-300">
+            <span className="bg-green-100 text-green-800  text-[12px] xl:text-sm font-medium me-2 px-2.5 py-0.5 rounded dark:bg-green-900 dark:text-green-300">
               {" "}
               {value}
             </span>
@@ -159,7 +158,7 @@ const DoctorView = () => {
 
         // Default rendering for other cities
         return (
-          <span className="bg-yellow-100 text-yellow-800 text-sm font-medium me-2 px-2.5 py-0.5 rounded dark:bg-yellow-900 dark:text-yellow-300">
+          <span className="bg-yellow-100 text-yellow-800  text-[12px] xl:text-sm font-medium me-2 px-2.5 py-0.5 rounded dark:bg-yellow-900 dark:text-yellow-300">
             {value}
           </span>
         );
@@ -172,7 +171,14 @@ const DoctorView = () => {
         // Check if the status of the patient is 'waiting'
         if (row.original.status === "waiting") {
           // Render the check-in button
-          return <button onClick={() => handleCheckIn(row.original.id)}>Check-in</button>;
+          return (
+            <button
+              className=" px-2.5 py-1 bg-[#2E37A4] rounded-md shadow-lg text-[12px] xl:text-sm text-white cursor-pointer hover:bg-[#1a238f]"
+              onClick={() => handleCheckIn(row.original.id)}
+            >
+              Check-in
+            </button>
+          );
         }
         // If the patient is not waiting, you can return null or some placeholder
         return null;
@@ -182,13 +188,13 @@ const DoctorView = () => {
   ];
 
   const breadcrumbs = [
-    {
-      label: "Appointments",
-      href: "#",
+    // {
+    //   label: "Appointments",
+    //   href: "#",
 
-      class: "text-[#2E37A4]",
-    },
-    { label: "Appointments List", class: "text-[#2E37A4]/60" },
+    //   class: "text-[#2E37A4]",
+    // },
+    { label: "Appointments List", class: "text-[#2E37A4]" },
   ];
 
   //
@@ -210,7 +216,7 @@ const DoctorView = () => {
             </div>
 
             <div className=" inline-flex ">
-              <form className=" relative w-[270px]">
+              <form className=" relative w-[200px] xl:w-[270px]">
                 <input
                   type="text"
                   className=" h-11  px-5 w-full pl-10 bg-gray-100 rounded-lg
@@ -219,13 +225,23 @@ const DoctorView = () => {
                   "
                   placeholder="Search here"
                 />
-                <a className=" absolute left-2.5 top-2.5" href="https://www.app.vitalx.in">
+                <a
+                  className=" absolute left-2.5 top-2.5"
+                  href="https://www.app.vitalx.in"
+                >
                   <img src="images/icons/search-normal.svg" alt="" />
                 </a>
               </form>
             </div>
           </div>
-          <MyTable columns={columns} data={appointments} onCheckIn={handleCheckIn}/>
+
+          <div className=" overflow-auto">
+            <MyTable
+              columns={columns}
+              data={appointments}
+              onCheckIn={handleCheckIn}
+            />
+          </div>
           {/* Render the table */}
           <div className="px-5 py-5">
             <button

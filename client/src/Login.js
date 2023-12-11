@@ -137,16 +137,24 @@ const Login = () => {
   };
 
   return (
-    <div className="app-layout-blank flex flex-auto flex-col h-[100vh]">
-      <div className="flex h-full">
+    <div className="app-layout-blank flex flex-auto flex-wrap xl:flex-nowrap flex-col h-[100vh]">
+      <div className="flex h-full w-full">
         <div
           // style={{
           //   backgroundImage: `url("images/intro.png")`,
           // }}
-          className="bg-no-repeat bg-cover py-6 px-16 flex-col justify-between hidden lg:flex  relative bg-[#2E37A4]  xl:w-5/12"
+          className="bg-no-repeat bg-cover py-6 px-16 flex-col justify-between hidden lg:flex  relative bg-[#2E37A4] w-full xl:w-5/12"
         >
-          <img src="images/pattern.png" className=" absolute  z-0 left-0" alt=""/>
-          <img src="images/login-02.png" className=" absolute  z-0 left-0"alt=""/>
+          <img
+            src="images/pattern.png"
+            className=" absolute  z-0 left-0"
+            alt=""
+          />
+          <img
+            src="images/login-02.png"
+            className=" absolute  z-0 left-0"
+            alt=""
+          />
           <div className="logo text-5xl text-white">VitalX</div>
 
           <div>
@@ -163,9 +171,9 @@ const Login = () => {
           </div>
         </div>
 
-        <div className="flex flex-col justify-center items-center  xl:w-7/12 bg-[#f5f5f6]">
-          <div className="xl:w-7/12">
-            <div className=" bg-white  px-14 py-12  rounded-2xl">
+        <div className="flex flex-col  lg:justify-center items-center w-full  xl:w-7/12 bg-[#f5f5f6] pt-5 xl:pt-0">
+          <div className="xl:w-7/12 px-5">
+            <div className=" bg-white  px-8 md:px-10 xl:px-14 py-12  rounded-2xl">
               <div className="mb-8">
                 <h3 className="mb-1 text-xl font-bold">Welcome back!</h3>
                 <p className="text-gray-600">
@@ -175,7 +183,68 @@ const Login = () => {
 
               {showOtpForm ? (
                 <>
-                  <TextField
+                  <div className=" inline-flex flex-col w-full relative mb-5">
+                    <label
+                      htmlFor="phoneNumber"
+                      className=" absolute left-4 -top-3 text-gray-800 px-1.5 bg-white font-semibold text-[14px]"
+                    >
+                      Phone Number
+                    </label>
+
+                    <input
+                      id="phoneNumber"
+                      value={phoneNumber}
+                      type="contact"
+                      onChange={(e) => setPhoneNumber(e.target.value)}
+                      className=" min-h-[45px] w-full px-5 outline-none border-2 border-gray-200  rounded-md  focus:ring-blue-600 focus:border-blue-600"
+                    />
+                  </div>
+
+                  <button
+                    type="submit"
+                    onClick={handleSendOtp}
+                    className="min-w-[131px]  w-full text-base font-medium rounded-lg py-2 px-5  bg-[#2E37A4] hover:bg-[#1a238f] text-white"
+                  >
+                    Send OTP
+                  </button>
+
+                  <div className=" inline-flex flex-col w-full relative mb-5 mt-10">
+                    <label
+                      htmlFor="otp"
+                      className=" absolute left-4 -top-3 text-gray-800 px-1.5 bg-white font-semibold text-[14px]"
+                    >
+                      OTP
+                    </label>
+
+                    <input
+                      id="otp"
+                      value={otp}
+                      type="contact"
+                      onChange={(e) => setOtp(e.target.value)}
+                      className=" min-h-[45px] w-full px-5 outline-none border-2 border-gray-200  rounded-md  focus:ring-blue-600 focus:border-blue-600"
+                    />
+                  </div>
+
+                  <button
+                    type="submit"
+                    onClick={handleVerifyOtp}
+                    className="min-w-[131px]  w-full text-base font-medium rounded-lg py-2 px-5  bg-[#2E37A4] hover:bg-[#1a238f] text-white"
+                  >
+                    Verify OTP
+                  </button>
+
+                  <div className="flex gap-x-2 mt-5">
+                    <span className=" text-gray-500"> Back to</span>
+                    <button
+                      onClick={handleToggleOtpForm}
+                      className="text-[#2E37A4] font-semibold"
+                    >
+                      {" "}
+                      Email/Password
+                    </button>{" "}
+                  </div>
+
+                  {/* <TextField
                     label="Phone Number"
                     value={phoneNumber}
                     onChange={(e) => setPhoneNumber(e.target.value)}
@@ -205,45 +274,103 @@ const Login = () => {
                   )}
                   <Button variant="text" onClick={handleToggleOtpForm}>
                     Back to Email/Password
-                  </Button>
+                  </Button> */}
                 </>
               ) : (
                 <>
-                  <TextField
+                  <div className=" inline-flex flex-col w-full relative mb-6">
+                    <label
+                      htmlFor="email"
+                      className=" absolute left-4 -top-3 text-gray-800 px-1.5 bg-white font-semibold text-[14px]"
+                    >
+                      Email
+                    </label>
+
+                    <input
+                      id="email"
+                      value={email}
+                      type="email"
+                      onChange={(e) => setEmail(e.target.value)}
+                      className=" min-h-[45px] w-full px-5 outline-none border-2 border-gray-200  rounded-md  focus:ring-blue-600 focus:border-blue-600"
+                    />
+                  </div>
+
+                  <div className=" inline-flex flex-col w-full relative  mb-6">
+                    <label
+                      htmlFor="password"
+                      className=" absolute left-4 -top-3 text-gray-800 px-1.5 bg-white font-semibold text-[14px]"
+                    >
+                      Password
+                    </label>
+
+                    <input
+                      id="password"
+                      value={password}
+                      type="password"
+                      onChange={(e) => setPassword(e.target.value)}
+                      className=" min-h-[45px] w-full px-5 outline-none border-2 border-gray-200  rounded-md  focus:ring-blue-600 focus:border-blue-600"
+                    />
+                  </div>
+
+                  {/* <TextField
                     label="Email"
                     type="email"
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
                     margin="normal"
                     fullWidth
-                  />
-                  <TextField
+                    className=" h-10"
+                  /> */}
+                  {/* <TextField
                     label="Password"
                     type="password"
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
                     margin="normal"
                     fullWidth
-                  />
-                  <Button
+                  /> */}
+                  <button
                     type="submit"
                     onClick={handleLogin}
-                    variant="contained"
-                    fullWidth
+                    className="min-w-[131px] w-full text-base font-medium rounded-lg py-2 px-5  bg-[#2E37A4] hover:bg-[#1a238f] text-white"
                   >
                     Login
-                  </Button>
-                  <Button variant="text" onClick={handleToggleOtpForm}>
-                    Or login through OTP
-                  </Button>
+                  </button>
                 </>
               )}
 
-              <Button variant="text" onClick={() => navigate("/Registration")}>
-                Don't have an account? Register
-              </Button>
+              <div className=" mt-5">
+                <span className=" text-gray-500">
+                  {" "}
+                  Don't have an account?{" "}
+                  <button
+                    onClick={() => navigate("/Registration")}
+                    className="text-[#2E37A4] font-semibold"
+                  >
+                    {" "}
+                    Register
+                  </button>{" "}
+                </span>
+              </div>
             </div>
           </div>
+          {showOtpForm ? (
+            <></>
+          ) : (
+            <>
+              {" "}
+              <div className=" inline-flex gap-x-2 mt-5 text-gray-500">Or</div>
+              <div className=" inline-flex gap-x-2 mt-5">
+                <button
+                  onClick={handleToggleOtpForm}
+                  className="min-w-[131px] w-full text-base font-medium rounded-lg py-2 px-5 border bg-white hover:text-white border-[#2E37A4] hover:bg-[#2E37A4] text-[#1a238f]"
+                >
+                  {" "}
+                  login through
+                </button>{" "}
+              </div>
+            </>
+          )}
         </div>
       </div>
     </div>

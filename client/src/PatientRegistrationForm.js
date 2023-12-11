@@ -7,6 +7,7 @@ import {
   Typography,
 } from "@mui/material";
 import { io } from "socket.io-client";
+import InputComponent from "./components/InputComponent";
 
 const PatientRegistrationForm = () => {
   const [name, setName] = useState("");
@@ -236,17 +237,32 @@ const PatientRegistrationForm = () => {
     }
   };
 
+  const genderOptions = [
+    { value: "", label: "" },
+    { value: "M", label: "Male" },
+    { value: "F", label: "Female" },
+    { value: "O", label: "Other" },
+  ];
+
   return (
-    <div className="app-layout-blank flex flex-auto flex-col h-[100vh]">
+    <div className="app-layout-blank flex flex-auto flex-col h-[100vh] max-h-auto">
       <div className="flex h-full">
         <div
           // style={{
           //   backgroundImage: `url("images/intro.png")`,
           // }}
-          className="bg-no-repeat bg-cover py-6 px-16 flex-col justify-between hidden lg:flex  relative bg-[#2E37A4]  xl:w-5/12"
+          className="bg-no-repeat bg-cover py-6 px-16 flex-col justify-between hidden lg:flex  relative bg-[#2E37A4]  w-full xl:w-5/12"
         >
-          <img src="images/pattern.png" className=" absolute  z-0 left-0" alt="" />
-          <img src="images/login-02.png" className=" absolute  z-0 left-0" alt=""/>
+          <img
+            src="images/pattern.png"
+            className=" absolute  z-0 left-0"
+            alt=""
+          />
+          <img
+            src="images/login-02.png"
+            className=" absolute  z-0 left-0"
+            alt=""
+          />
           <div className="logo text-5xl text-white">VitalX</div>
 
           <div>
@@ -263,7 +279,7 @@ const PatientRegistrationForm = () => {
           </div>
         </div>
 
-        <div className="flex flex-col justify-center items-center  xl:w-7/12 bg-[#f5f5f6]">
+        <div className="flex flex-col  lg:justify-center items-center  w-full xl:w-7/12 bg-[#f5f5f6] pt-5 xl:pt-0">
           <div className="xl:w-7/12">
             <div className=" bg-white  px-14 py-12  rounded-2xl">
               <div className="mb-8">
@@ -271,38 +287,138 @@ const PatientRegistrationForm = () => {
                 <p className="text-gray-600">Please enter your details</p>
               </div>
               {!otpSent && (
-                <div className="flex">
-                  <div className=" w-8/12">
-                    <TextField
-                      label="Phone Number"
+                <>
+                  <div className=" inline-flex flex-col w-full relative  mb-6">
+                    <label
+                      htmlFor="contactNumber"
+                      className=" absolute left-4 -top-3 text-gray-800 px-1.5 bg-white font-semibold text-[14px]"
+                    >
+                      Phone Number
+                    </label>
+
+                    <input
+                      id="contactNumber"
                       value={contactNumber}
+                      type="text"
                       onChange={handleContactNumberChange}
-                      className=" w-full"
+                      className=" min-h-[45px] w-full px-5 outline-none border-2 border-gray-200  rounded-md  focus:ring-blue-600 focus:border-blue-600"
                     />
                   </div>
-                  <div className=" w-4/12 text-center  self-center">
-                    <Button onClick={handleSendOtp}>Send OTP</Button>
-                  </div>
-                </div>
+
+                  <button
+                    type="submit"
+                    onClick={handleSendOtp}
+                    className="min-w-[131px] w-full text-base font-medium rounded-lg py-2 px-5  bg-[#2E37A4] hover:bg-[#1a238f] text-white"
+                  >
+                    Send OTP
+                  </button>
+
+                  {/* <div className="flex">
+                    <div className=" w-8/12">
+                      <TextField
+                        label="Phone Number"
+                        value={contactNumber}
+                        onChange={handleContactNumberChange}
+                        className=" w-full"
+                      />
+                    </div>
+                    <div className=" w-4/12 text-center  self-center">
+                      <Button onClick={handleSendOtp}>Send OTP</Button>
+                    </div>
+                  </div> */}
+                </>
               )}
               {otpSent && !otpVerified && (
-                <div className="flex">
-                  <div className=" w-8/12">
-                    <TextField
-                      label="Enter OTP"
+                <>
+                  <div className=" inline-flex flex-col w-full relative  mb-6">
+                    <label
+                      htmlFor="otp"
+                      className=" absolute left-4 -top-3 text-gray-800 px-1.5 bg-white font-semibold text-[14px]"
+                    >
+                      Enter OTP
+                    </label>
+
+                    <input
+                      id="otp"
                       value={otp}
+                      type="text"
                       onChange={(e) => setOtp(e.target.value)}
+                      className=" min-h-[45px] w-full px-5 outline-none border-2 border-gray-200  rounded-md  focus:ring-blue-600 focus:border-blue-600"
                     />
                   </div>
-                  <div className=" w-4/12 text-center  self-center">
-                    <Button onClick={handleVerifyOtp}>Verify OTP</Button>
-                  </div>
-                </div>
+
+                  <button
+                    type="submit"
+                    onClick={handleVerifyOtp}
+                    className="min-w-[131px] w-full text-base font-medium rounded-lg py-2 px-5  bg-[#2E37A4] hover:bg-[#1a238f] text-white"
+                  >
+                    Verify OTP
+                  </button>
+                  {/* <div className="flex">
+                    <div className=" w-8/12">
+                      <TextField
+                        label="Enter OTP"
+                        value={otp}
+                        onChange={(e) => setOtp(e.target.value)}
+                      />
+                    </div>
+                    <div className=" w-4/12 text-center  self-center">
+                      <Button onClick={handleVerifyOtp}>Verify OTP</Button>
+                    </div>
+                  </div> */}
+                </>
               )}
               {otpVerified && (
-                <>
-                  <form onSubmit={handleSubmit}>
-                    <TextField
+                <form onSubmit={handleSubmit}>
+                  <InputComponent
+                    label="Name"
+                    id="name"
+                    value={name}
+                    onChange={handleNameChange}
+                    type="text"
+                  />
+                  <InputComponent
+                    label="Age"
+                    id="age"
+                    value={age}
+                    onChange={handleAgeChange}
+                    type="tel"
+                  />
+                  <InputComponent
+                    label="Weight"
+                    id="weight"
+                    value={weight}
+                    onChange={handleWeightChange}
+                    type="text"
+                  />
+                  <InputComponent
+                    label="Contact Number"
+                    id="contactNumber"
+                    value={contactNumber}
+                    onChange={handleContactNumberChange}
+                    type="tel"
+                  />
+                  <InputComponent
+                    label="Gender"
+                    id="gender"
+                    value={gender}
+                    onChange={handleGenderChange}
+                    type="select"
+                    options={genderOptions}
+                    fullWidth
+                    SelectProps={{
+                      native: true,
+                    }}
+                  />
+                  <button
+                    type="submit"
+                    className="min-w-[131px] w-full text-base font-medium rounded-lg py-2 px-5  bg-[#2E37A4] hover:bg-[#1a238f] text-white"
+                    disabled={isRegistering || registrationCompleted}
+                  >
+                    Register
+                  </button>
+
+                  {/* <TextField
                       label="Name"
                       variant="outlined"
                       fullWidth
@@ -357,9 +473,8 @@ const PatientRegistrationForm = () => {
                       disabled={isRegistering || registrationCompleted}
                     >
                       Register
-                    </Button>
-                  </form>
-                </>
+                    </Button> */}
+                </form>
               )}
 
               {appointmentNumber && (

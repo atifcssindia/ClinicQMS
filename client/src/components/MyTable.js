@@ -15,7 +15,7 @@ const MyTable = ({ columns, data }) => {
           >
             {headerGroup.headers.map((column) => (
               <th
-                className=" text-left py-3.5 px-5 text-gray-800 font-semibold "
+                className=" text-left py-3.5 px-5 text-gray-800 text-[14px] xl:text-[15px] font-semibold "
                 {...column.getHeaderProps()}
               >
                 {column.render("Header")}
@@ -34,7 +34,7 @@ const MyTable = ({ columns, data }) => {
             >
               {row.cells.map((cell) => (
                 <td
-                  className=" text-left py-3.5 px-5  font-medium text-gray-700 text-[15px]"
+                  className=" text-left py-3.5 px-5 text-[14px] xl:text-[15px] font-medium text-gray-700 "
                   {...cell.getCellProps()}
                 >
                   {cell.render("Cell")}
