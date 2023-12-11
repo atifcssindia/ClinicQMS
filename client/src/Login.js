@@ -1,5 +1,4 @@
 import React, { useState } from "react";
-import { TextField, Button } from "@mui/material";
 import { useNavigate } from "react-router-dom";
 
 const Login = () => {
@@ -8,7 +7,6 @@ const Login = () => {
   const [otp, setOtp] = useState("");
   const [phoneNumber, setPhoneNumber] = useState("");
   const [showOtpForm, setShowOtpForm] = useState(false);
-  const [otpSent, setOtpSent] = useState(false);
 
   const navigate = useNavigate();
 
@@ -74,7 +72,6 @@ const Login = () => {
       const data = await response.json();
 
       if (data.success) {
-        setOtpSent(true); // Set otpSent to true when OTP is successfully sent
         // Handle UI changes, like showing an input field for entering OTP
       } else {
         // Handle the case where OTP sending failed
