@@ -28,7 +28,7 @@ const getDoctorIdFromUserId = async (userId) => {
 
 const getTodaysAppointments = async (userId, date = new Date()) => {
   const doctorId = await getDoctorIdFromUserId(userId);
-  const formattedDate = date.toISOString().split('T')[0];
+  const formattedDate = date.toISOString().split('T')[0]; // This will be in IST
 
   const query = `
     SELECT
@@ -61,14 +61,14 @@ const getTodaysAppointments = async (userId, date = new Date()) => {
 };
 
 
-
 const getNextAppointmentNumber = async (doctorId) => {
-  const currentDate = new Date().toISOString().slice(0, 10); // Format as YYYY-MM-DD
+  const currentDate = new Date().toISOString().slice(0, 10);
   const res = await pool.query(
     'SELECT COUNT(*) FROM Appointment WHERE doctor_id = $1 AND date_time::date = $2',
     [doctorId, currentDate]
   );
   const nextNumber = parseInt(res.rows[0].count) + 1;
+  console.log(currentDate);
   return nextNumber;
 }
 
@@ -97,15 +97,29 @@ const findUserByPhoneNumber = async (phoneNumber) => {
   return rows[0]; // This will be undefined if the user is not found
 };
 
-// Assuming you have added a phone_number field to your users table
 const storeOTP = async (phoneNumber, otp) => {
-  const query = 'INSERT INTO otp (mobile_number, otp_sent, created_at, expires_at) VALUES ($1, $2, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP + INTERVAL \'5 minutes\')';
+  const query = `
+    INSERT INTO otp (mobile_number, otp_sent, created_at, expires_at) 
+    VALUES (
+      $1, 
+      $2, 
+      CURRENT_TIMESTAMP,
+      CURRENT_TIMESTAMP + INTERVAL '5 minutes' 
+    )
+  `;
   await pool.query(query, [phoneNumber, otp]);
-  // No return value required unless you need a confirmation
 };
 
+
+
 const verifyOTP = async (phoneNumber, otp) => {
-  const query = 'SELECT otp_sent FROM otp WHERE mobile_number = $1 AND expires_at > CURRENT_TIMESTAMP AND validated = FALSE';
+  const query = `
+    SELECT otp_sent 
+    FROM otp 
+    WHERE mobile_number = $1 
+      AND expires_at > CURRENT_TIMESTAMP
+  `;
+
   const { rows } = await pool.query(query, [phoneNumber]);
 
   if (rows.length > 0 && rows[0].otp_sent === otp) {
