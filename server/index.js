@@ -1,5 +1,5 @@
 const express = require('express');
-const { insertPatient, getTodaysAppointments, insertAppointment, findPatientByContactNumber, insertDoctor, updateDoctorQRCode,insertUser, findUserByEmail,setNextPatientStatus ,setPatientStatusTreated ,getDoctorIdFromUserId,updateAppointmentStatuses,getPeopleAheadCount,storeOTP, verifyOTP, findUserByPhoneNumber} = require('./db');
+const { insertPatient, getTodaysAppointments, insertAppointment, findPatientByContactNumber, insertDoctor, updateDoctorQRCode,insertUser, findUserByEmail,setNextPatientStatus ,setPatientStatusTreated ,getDoctorIdFromUserId,updateAppointmentStatuses,getPeopleAheadCount,storeOTP, verifyOTP, findUserByPhoneNumber,updateAppointmentStatus, getDoctorNameFromDoctorId} = require('./db');
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
 const app = express();
@@ -108,6 +108,18 @@ app.post('/verifyOTP', async (req, res) => {
   }
 });
 
+app.post('/appointments/checkin/:appointmentId', async (req, res) => {
+  try {
+      const appointmentId = req.params.appointmentId;
+      // Assuming there's a function in db.js to update appointment status
+      await updateAppointmentStatus(appointmentId, 1); // The new status might be 'Checked-In' or something similar
+      res.status(200).send('Appointment status updated');
+  } catch (error) {
+      console.error('Error updating appointment status:', error);
+      res.status(500).send('Internal Server Error');
+  }
+});
+
 app.post('/verifyDoctorOTP', async (req, res) => {
   const { phoneNumber, otp } = req.body;
 
@@ -120,7 +132,9 @@ app.post('/verifyDoctorOTP', async (req, res) => {
 
       if (user) {
         // Generate a JWT token for the user
-        const token = jwt.sign({ user_id: user.user_id, role: user.role }, process.env.JWT_SECRET, { expiresIn: '1h' });
+        const doctorId= await getDoctorIdFromUserId(user.user_id);
+        const doctorName= await getDoctorNameFromDoctorId(doctorId);
+        const token = jwt.sign({ user_id: user.user_id, role: user.role,doctor_id: doctorId ,doctorName: doctorName }, process.env.JWT_SECRET, { expiresIn: '1h' });
 
         // Respond with token and user role
         res.json({ success: true, token, role: user.role });
@@ -190,7 +204,8 @@ app.post('/auth/register', async (req, res) => {
 
     // Create a token
     const doctorId= await getDoctorIdFromUserId(user.user_id);
-    const token = jwt.sign({ user_id: user.user_id, role,doctor_id: doctorId }, process.env.JWT_SECRET, { expiresIn: '1h' });
+    const doctorName= await getDoctorNameFromDoctorId(doctorId);
+    const token = jwt.sign({ user_id: user.user_id, role,doctor_id: doctorId ,doctorName: doctorName }, process.env.JWT_SECRET, { expiresIn: '1h' });
 
     // Respond with the token and user info
     res.status(201).json({ token, user, doctor }); // doctor will be undefined if role is not 'doctor'
@@ -204,8 +219,9 @@ app.get('/getDoctorId', async (req, res) => {
   const { userId } = req.query;
   try {
     const doctorId = await getDoctorIdFromUserId(userId);
+    const doctorName = await getDoctorNameFromDoctorId(doctorId);
     if (doctorId) {
-      res.json({ doctorId });
+      res.json({ doctorId, doctorName });
     } else {
       res.status(404).send('Doctor not found for the given user ID');
     }
@@ -220,8 +236,9 @@ app.post('/auth/login', async (req, res) => {
   try {
     const user = await findUserByEmail(email);
     const doctorId=await getDoctorIdFromUserId(user.user_id);
+    const doctorName= await getDoctorNameFromDoctorId(doctorId);
     if (user && await bcrypt.compare(password, user.hashed_password)) {
-      const token = jwt.sign({ user_id: user.user_id, role: user.role, doctor_id: doctorId }, process.env.JWT_SECRET, { expiresIn: '1h' });
+      const token = jwt.sign({ user_id: user.user_id, role: user.role, doctor_id: doctorId,doctorName: doctorName }, process.env.JWT_SECRET, { expiresIn: '1h' });
       res.json({ token, role: user.role });
     } else {
       res.status(401).send('Invalid credentials');

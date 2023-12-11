@@ -327,7 +327,7 @@ const PatientRegistrationForm = () => {
               {peopleAhead != null && (
                 <Typography variant="body2">
                   {peopleAhead} people ahead of you.
-                </Typography>
+                                  </Typography>
               )}
             </div>
           </div>

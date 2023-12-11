@@ -20,7 +20,7 @@ const AppointmentsTable = ({ appointments }) => {
             <TableCell className=" !font-semibold !text-gray-700">Seq No</TableCell>
             <TableCell className=" !font-semibold !text-gray-700" align="right">Patient Details</TableCell>
             <TableCell className=" !font-semibold !text-gray-700" align="right">Status</TableCell>
-          </TableRow>
+                      </TableRow>
         </TableHead>
         <TableBody className=" ">
           {appointments.map((appointment) => (
@@ -33,7 +33,7 @@ const AppointmentsTable = ({ appointments }) => {
               </TableCell>
               <TableCell align="right">{appointment.patient_details}</TableCell>
               <TableCell align="right">{appointment.status}</TableCell>
-            </TableRow>
+                          </TableRow>
           ))}
         </TableBody>
       </Table>

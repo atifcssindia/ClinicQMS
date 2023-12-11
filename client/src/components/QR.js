@@ -6,36 +6,21 @@ import QRCode from 'qrcode.react';
 
 const QR = () => {
   const [doctorId, setDoctorId] = useState(null);
+  const [doctorName, setDoctorName]=useState('');
 
 
-  useEffect(() => {
-    const fetchDoctorId = async () => {
-      const token = localStorage.getItem("token");
-      const decodedToken = jwtDecode(token);
-      const userId = decodedToken.user_id;
-  
-      try {
-        const response = await fetch(`${process.env.REACT_APP_API_URL}/getDoctorId?userId=${userId}`);
-        if (!response.ok) {
-          throw new Error('Network response was not ok.');
-        }
-        const data = await response.json();
-        setDoctorId(data.doctorId);
-      } catch (error) {
-        console.error('There has been a problem with your fetch operation:', error);
-      }
-    };
-  
-    fetchDoctorId();
-    // Since we're only interested in running this effect on mount, the dependency array is empty
-  }, []);
-  
-  // Separate useEffect for logging doctorId
-  useEffect(() => {
-    if (doctorId !== undefined) { // Assuming the initial state for doctorId is undefined
-      console.log(doctorId);
-    }
-  }, [doctorId]);
+useEffect(() => {
+
+  const fetchDoctorId = async () => {
+    const token = localStorage.getItem("token");
+    const decodedToken = jwtDecode(token);
+    console.log(decodedToken);
+      setDoctorId(decodedToken.doctor_id);
+      setDoctorName(decodedToken.doctorName);
+  };
+
+  fetchDoctorId();
+}, []);
 
   const handlePrint = () => {
     const qrCodeElement = document.getElementById("printableQRCode");
@@ -84,7 +69,7 @@ const QR = () => {
         <div className=" pt-8 flex justify-center">
           <div className=" lg:w-5/12 xl:w-4/12">
             <div className=" text-2xl font-bold  text-white text-center py-5 bg-blue-400 drop-shadow-lg">
-              Dr. Carolyn Perkins
+              Dr. {doctorName}
             </div>
             <div className=" drop-shadow-lg bg-white p-7">
               <div
