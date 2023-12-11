@@ -2,37 +2,42 @@ import { useEffect, useState } from "react";
 import { Button } from "@mui/material";
 import { jwtDecode } from "jwt-decode";
 import AdminLayout from "../AdminLayout";
-import QRCode from 'qrcode.react';
+import QRCode from "qrcode.react";
 
 const QR = () => {
   const [doctorId, setDoctorId] = useState(null);
-
 
   useEffect(() => {
     const fetchDoctorId = async () => {
       const token = localStorage.getItem("token");
       const decodedToken = jwtDecode(token);
       const userId = decodedToken.user_id;
-  
+
       try {
-        const response = await fetch(`${process.env.REACT_APP_API_URL}/getDoctorId?userId=${userId}`);
+        const response = await fetch(
+          `${process.env.REACT_APP_API_URL}/getDoctorId?userId=${userId}`
+        );
         if (!response.ok) {
-          throw new Error('Network response was not ok.');
+          throw new Error("Network response was not ok.");
         }
         const data = await response.json();
         setDoctorId(data.doctorId);
       } catch (error) {
-        console.error('There has been a problem with your fetch operation:', error);
+        console.error(
+          "There has been a problem with your fetch operation:",
+          error
+        );
       }
     };
-  
+
     fetchDoctorId();
     // Since we're only interested in running this effect on mount, the dependency array is empty
   }, []);
-  
+
   // Separate useEffect for logging doctorId
   useEffect(() => {
-    if (doctorId !== undefined) { // Assuming the initial state for doctorId is undefined
+    if (doctorId !== undefined) {
+      // Assuming the initial state for doctorId is undefined
       console.log(doctorId);
     }
   }, [doctorId]);
@@ -53,7 +58,7 @@ const QR = () => {
         </body>
       </html>
     `;
-    const printWindow = window.open('', '_blank');
+    const printWindow = window.open("", "_blank");
     printWindow.document.write(html);
     printWindow.document.close();
     printWindow.focus();
@@ -62,7 +67,10 @@ const QR = () => {
   };
 
   const QRCodeElement = (
-    <div id="printableQRCode">
+    <div
+      id="printableQRCode"
+      className=" flex justify-center -mt-20  drop-shadow-lg"
+    >
       {doctorId && (
         <QRCode
           value={`https://app.vitalx.in/?doctorId=${doctorId}`}
@@ -81,15 +89,13 @@ const QR = () => {
           Appointments
         </h1> */}
 
-        <div className=" pt-8 flex justify-center">
+        <div className=" xl:pt-8 flex justify-center">
           <div className=" lg:w-5/12 xl:w-4/12">
-            <div className=" text-2xl font-bold  text-white text-center py-5 bg-blue-400 drop-shadow-lg">
+            <div className=" text-2xl font-bold  text-white text-center pt-5 pb-20 bg-gradient-to-r from-[#7257d8] to-[#99ccff] drop-shadow-lg">
               Dr. Carolyn Perkins
             </div>
-            <div className=" drop-shadow-lg bg-white p-7">
-              <div
-                className=" mx-auto w-full "
-              />
+            <div className=" bg-white p-7 border border-gray-200">
+              <div className=" mx-auto w-full  flex justify-center" />
               {QRCodeElement}
             </div>
             <div className=" text-2xl font-bold  text-gray-800 text-center pt-5">
@@ -101,7 +107,12 @@ const QR = () => {
             </div>
 
             <div className="mx-auto text-center mt-3">
-              <Button variant="contained" onClick={handlePrint}>Print</Button>
+              <button
+                className="min-w-[131px] text-base font-medium rounded-lg py-2 px-5  bg-[#2E37A4] text-white"
+                onClick={handlePrint}
+              >
+                Print
+              </button>
             </div>
           </div>
         </div>
