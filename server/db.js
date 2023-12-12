@@ -106,6 +106,36 @@ const insertAppointment = async (patientId, doctorId) => {
   };
 };
 
+const getPatientsByDoctorId = async (doctorId) => {
+  const query = `
+    SELECT 
+      p.patient_id,
+      p.patient_name,
+      p.patient_age,
+      p.patient_weight,
+      p.patient_contact_number,
+      p.gender,
+      MAX(a.date_time) as last_appointment
+    FROM 
+      patient p
+      JOIN appointment a ON p.patient_id = a.patient_id
+    WHERE 
+      a.doctor_id = $1
+    GROUP BY 
+      p.patient_id
+    ORDER BY 
+      last_appointment DESC;
+  `;
+
+  try {
+    const { rows } = await pool.query(query, [doctorId]);
+    return rows;
+  } catch (error) {
+    console.error('Error in getPatientsByDoctorId:', error);
+    throw error;
+  }
+};
+
 
 const findUserByPhoneNumber = async (phoneNumber) => {
   const query = 'SELECT * FROM users WHERE phone_number = $1';
@@ -274,4 +304,4 @@ const updateAppointmentStatuses = async (doctorId) => {
 
 
 
-module.exports = { insertPatient,getTodaysAppointments, updateAppointmentStatus,insertAppointment, findPatientByContactNumber, insertDoctor, updateDoctorQRCode,insertUser, findUserByEmail, setNextPatientStatus ,setPatientStatusTreated,getDoctorIdFromUserId,updateAppointmentStatuses,getPeopleAheadCount,storeOTP, verifyOTP, findUserByPhoneNumber,getDoctorNameFromDoctorId};
+module.exports = { insertPatient,getTodaysAppointments,getPatientsByDoctorId, updateAppointmentStatus,insertAppointment, findPatientByContactNumber, insertDoctor, updateDoctorQRCode,insertUser, findUserByEmail, setNextPatientStatus ,setPatientStatusTreated,getDoctorIdFromUserId,updateAppointmentStatuses,getPeopleAheadCount,storeOTP, verifyOTP, findUserByPhoneNumber,getDoctorNameFromDoctorId};
