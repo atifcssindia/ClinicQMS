@@ -106,30 +106,36 @@ const insertAppointment = async (patientId, doctorId) => {
   };
 };
 
-const getPatientsByDoctorId = async (doctorId, date) => {
-  let query = `
-    SELECT p.*
-    FROM patient p
-    JOIN appointment a ON p.patient_id = a.patient_id
-    WHERE a.doctor_id = $1
+const getPatientsByDoctorId = async (doctorId) => {
+  const query = `
+    SELECT 
+      p.patient_id,
+      p.patient_name,
+      p.patient_age,
+      p.patient_weight,
+      p.patient_contact_number,
+      p.gender,
+      MAX(a.date_time) as last_appointment
+    FROM 
+      patient p
+      JOIN appointment a ON p.patient_id = a.patient_id
+    WHERE 
+      a.doctor_id = $1
+    GROUP BY 
+      p.patient_id
+    ORDER BY 
+      last_appointment DESC;
   `;
-  const values = [doctorId];
-  console.log(values, query);
-
-  if (date) {
-    query += ' AND a.date_time::date = $2';
-    values.push(date);
-  }
 
   try {
-    const { rows } = await pool.query(query, values);
-    console.log(rows);
+    const { rows } = await pool.query(query, [doctorId]);
     return rows;
   } catch (error) {
     console.error('Error in getPatientsByDoctorId:', error);
     throw error;
   }
 };
+
 
 const findUserByPhoneNumber = async (phoneNumber) => {
   const query = 'SELECT * FROM users WHERE phone_number = $1';
