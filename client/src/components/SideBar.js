@@ -19,7 +19,7 @@ const SideBar = () => {
       >
         <div className="logo px-5 inline-flex text-xl text-[#2E37A4] font-semibold items-center">
           <span className="  text-2xl">
-            <img src="images/logo.png" className=" w-9" alt="none" />
+            <img src="images/new_vitalX_logo.svg" className=" w-10" alt="none" />
           </span>
 
           <span className={`ml-2  ${isSidebarOpen ? "lg:hidden" : ""} `}>

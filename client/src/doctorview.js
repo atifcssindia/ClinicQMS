@@ -219,7 +219,7 @@ const DoctorView = () => {
               <form className=" relative w-[200px] xl:w-[270px]">
                 <input
                   type="text"
-                  className=" h-11  px-5 w-full pl-10 bg-gray-100 rounded-lg
+                  className=" h-11  px-5 w-full pl-10 bg-transparent rounded-lg
 
                   text-gray-900 ring-0 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-0 outline-none focus:ring-inset focus:ring-indigo-600
                   "
