@@ -5,17 +5,16 @@ import { jwtDecode } from "jwt-decode";
 
 const Header = (props) => {
   const { isSidebarOpen, toggleSidebar } = useSidebar();
-  const [doctorName, setDoctorName]=useState('');
+  const [doctorName, setDoctorName] = useState("");
 
   useEffect(() => {
-
     const fetchDoctorId = async () => {
       const token = localStorage.getItem("token");
       const decodedToken = jwtDecode(token);
       console.log(decodedToken);
-        setDoctorName(decodedToken.doctorName);
+      setDoctorName(decodedToken.doctorName);
     };
-  
+
     fetchDoctorId();
   }, []);
 
@@ -70,7 +69,7 @@ const Header = (props) => {
         <div className="header-action header-action-end  inline-flex items-center gap-x-5">
           <div className="inline-flex items-center">
             <div className="m-1/4 cursor-pointer rounded-full p-2 text-[#2E37A4] font-semibold text-lg">
-{doctorName}
+              {doctorName}
             </div>
             <div className="m-1/4 cursor-pointer rounded-full p-2">
               <AvatarMy />
