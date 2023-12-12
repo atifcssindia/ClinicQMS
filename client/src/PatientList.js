@@ -40,12 +40,12 @@ const PatientList = () => {
   }, [doctorId]);
 
   const columns = [
-    { Header: "Name", accessor: "name" },
-    { Header: "Department", accessor: "specialization" },
-    { Header: "Specialization", accessor: "focus" },
-    { Header: "Degree", accessor: "qualifications" },
-    { Header: "Mobile", accessor: "phone" },
-    { Header: "Joining Date", accessor: "date" },
+    { Header: "ID", accessor: "patient_id" },
+    { Header: "Name", accessor: "patient_name" },
+    { Header: "Age", accessor: "patient_age" },
+    { Header: "Weight", accessor: "patient_weight" },
+    { Header: "Contact", accessor: "patient_contact_number" },
+    { Header: "Gender", accessor: "gender" },
     // Add more columns as needed
   ];
 
@@ -59,72 +59,7 @@ const PatientList = () => {
     { label: "Patients List", class: "text-[#2E37A4]" },
   ];
 
-  const data = [
-    {
-      name: "Andrea Lalema",
-      specialization: "Otolaryngology",
-      focus: "Infertility",
-      qualifications: "MBBS, MS",
-      phone: "+1 23 456890",
-      date: "01.10.2022",
-    },
-    {
-      name: "Smith Bruklin",
-      specialization: "Urology",
-      focus: "Prostate",
-      qualifications: "MBBS, MS",
-      phone: "+1 23 456890",
-      date: "01.10.2022",
-    },
-    {
-      name: "William Stephin",
-      specialization: "Radiology",
-      focus: "Cancer",
-      qualifications: "MBBS, MS",
-      phone: "+1 23 456890",
-      date: "01.10.2022",
-    },
-    {
-      name: "Bernardo James",
-      specialization: "Dentist",
-      focus: "Prostate",
-      qualifications: "MBBS, MS",
-      phone: "+1 23 456890",
-      date: "01.10.2022",
-    },
-    {
-      name: "Cristina Groves",
-      specialization: "Gynecology",
-      focus: "Prostate",
-      qualifications: "MBBS, MS",
-      phone: "+1 23 456890",
-      date: "01.10.2022",
-    },
-    {
-      name: "Mark Hay Smith",
-      specialization: "Gynecology",
-      focus: "Prostate",
-      qualifications: "MBBS, MS",
-      phone: "+1 23 456890",
-      date: "01.10.2022",
-    },
-    {
-      name: "Andrea Lalema",
-      specialization: "Otolaryngology",
-      focus: "Infertility",
-      qualifications: "MBBS, MS",
-      phone: "+1 23 456890",
-      date: "01.10.2022",
-    },
-    {
-      name: "Smith Bruklin",
-      specialization: "Urology",
-      focus: "Prostate",
-      qualifications: "MBBS, MS",
-      phone: "+1 23 456890",
-      date: "01.10.2022",
-    },
-  ];
+ 
 
   return (
     <div>
@@ -164,7 +99,7 @@ const PatientList = () => {
             </div>
 
             <div className=" overflow-auto">
-              <MyTable columns={columns} data={data} />
+              <MyTable columns={columns} data={patients} />
             </div>
             {/* Render the table */}
           </div>
