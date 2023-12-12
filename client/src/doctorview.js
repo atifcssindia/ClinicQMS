@@ -188,12 +188,12 @@ const DoctorView = () => {
   ];
 
   const breadcrumbs = [
-    // {
-    //   label: "Appointments",
-    //   href: "#",
+    {
+      label: "Home",
+      href: "#",
 
-    //   class: "text-[#2E37A4]",
-    // },
+      class: "text-[#2E37A4]",
+    },
     { label: "Appointments List", class: "text-[#2E37A4]" },
   ];
 
@@ -215,7 +215,7 @@ const DoctorView = () => {
               </div>
             </div>
 
-            <div className=" inline-flex ">
+            <div className=" inline-flex  hidden">
               <form className=" relative w-[200px] xl:w-[270px]">
                 <input
                   type="text"
