@@ -23,8 +23,8 @@ const SideBar = () => {
           </span>
 
           <span className={`ml-2  ${isSidebarOpen ? "lg:hidden" : ""} `}>
-            Clinic
-            <span className="text-[#2E37A4] font-semibold "> QMS</span>
+            Vital
+            <span className="text-[#2E37A4] font-semibold ">X</span>
           </span>
         </div>
 

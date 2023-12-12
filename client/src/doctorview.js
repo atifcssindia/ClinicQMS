@@ -215,7 +215,7 @@ const DoctorView = () => {
               </div>
             </div>
 
-            <div className=" inline-flex  hidden">
+            <div className=" inline-flex hidden">
               <form className=" relative w-[200px] xl:w-[270px]">
                 <input
                   type="text"

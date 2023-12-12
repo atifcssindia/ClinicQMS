@@ -1,7 +1,5 @@
 import React, { useState, useEffect } from "react";
 import {
-  TextField,
-  Button,
   Card,
   CardContent,
   Typography,
@@ -22,7 +20,7 @@ const PatientRegistrationForm = () => {
   const [registrationCompleted, setRegistrationCompleted] = useState(false); // New state
   const [otpSent, setOtpSent] = useState(false);
   const [otp, setOtp] = useState("");
-  const [patientDetails, setPatientDetails] = useState("");
+  // const [patientDetails, setPatientDetails] = useState("");
   const [otpVerified, setOtpVerified] = useState(false);
   const [errorMessage, setErrorMessage] = useState(""); // New state for error messages
 
@@ -62,9 +60,9 @@ const PatientRegistrationForm = () => {
     return /^\d{10}$/.test(number); // Regex to check for a 10-digit number
   };
   
-  const isValidOTP = (otp) => {
-    return /^\d{4}$/.test(otp); // Regex for 4-digit OTP
-  };
+  // const isValidOTP = (otp) => {
+  //   return /^\d{4}$/.test(otp); // Regex for 4-digit OTP
+  // };
   
   const isNumeric = (value) => {
     return /^\d+$/.test(value); // Regex to check for numeric value
@@ -217,7 +215,7 @@ const PatientRegistrationForm = () => {
   
       if (data.success) {
         setOtpVerified(true);
-        setPatientDetails(data.patientExists);
+        // setPatientDetails(data.patientExists);
         if (data.patientExists) {
           setGender(data.patientExists.gender);
           setAge(data.patientExists.patient_age);
