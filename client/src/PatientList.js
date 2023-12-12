@@ -167,11 +167,6 @@ const PatientList = () => {
               <MyTable columns={columns} data={data} />
             </div>
             {/* Render the table */}
-            <div className="px-5 py-5">
-              <button className="min-w-[131px] text-base font-medium rounded-lg py-2 px-5  bg-[#2E37A4] text-white">
-                Next Patient
-              </button>{" "}
-            </div>
           </div>
         </div>
         {/* other compoent  */}
