@@ -76,7 +76,7 @@ const generateOTP = () => {
 
 app.post('/generateOTP', async (req, res) => {
   const { phoneNumber } = req.body;
-  // const otp = generateOTP();
+  const otp = generateOTP();
   // const otp = 1234;
 
   try {
