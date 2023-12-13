@@ -5,7 +5,7 @@
   "main": "index.js",
   "scripts": {
     "start": "TZ='Asia/Kolkata' node server/index.js",
-    "start-aws": "node server.js:8080",
+    "start-aws": "node index.js:8080",
     "heroku-postbuild": "NPM_CONFIG_PRODUCTION=false npm install --prefix client && npm run build --prefix client",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
