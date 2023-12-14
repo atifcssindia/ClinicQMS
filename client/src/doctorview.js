@@ -169,7 +169,8 @@ const DoctorView = () => {
       accessor: "checkin", // This can be a dummy accessor since the actual functionality will be in the Cell
       Cell: ({ row }) => {
         // Check if the status of the patient is 'waiting'
-        if (row.original.status === "waiting") {
+
+        if (row.original.status === "Waiting") {
           // Render the check-in button
           return (
             <button
@@ -188,12 +189,12 @@ const DoctorView = () => {
   ];
 
   const breadcrumbs = [
-    // {
-    //   label: "Appointments",
-    //   href: "#",
+    {
+      label: "Home",
+      href: "#",
 
-    //   class: "text-[#2E37A4]",
-    // },
+      class: "text-[#2E37A4]",
+    },
     { label: "Appointments List", class: "text-[#2E37A4]" },
   ];
 
@@ -219,7 +220,7 @@ const DoctorView = () => {
               <form className=" relative w-[200px] xl:w-[270px]">
                 <input
                   type="text"
-                  className=" h-11  px-5 w-full pl-10 bg-gray-100 rounded-lg
+                  className=" h-11  px-5 w-full pl-10 bg-transparent rounded-lg
 
                   text-gray-900 ring-0 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-0 outline-none focus:ring-inset focus:ring-indigo-600
                   "
