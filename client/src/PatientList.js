@@ -3,7 +3,7 @@ import { jwtDecode } from "jwt-decode";
 import AdminLayout from "./AdminLayout";
 import MyBreakcrumbs from "./components/MyBreadcrumbs";
 import MyTable from "./components/MyTable";
-
+import * as moment from "moment";
 const PatientList = () => {
   const [patients, setPatients] = useState([]);
   const [doctorId, setDoctorId] = useState("");
@@ -46,6 +46,16 @@ const PatientList = () => {
     { Header: "Weight", accessor: "patient_weight" },
     { Header: "Contact", accessor: "patient_contact_number" },
     { Header: "Gender", accessor: "gender" },
+    {
+      Header: "last Appointment",
+      accessor: "last_appointment",
+
+      Cell: ({ value }) => {
+        // Check if the city is "Indore"
+
+        return <span className=""> {moment(value).format("DD/MM/YYYY")}</span>;
+      },
+    },
     // Add more columns as needed
   ];
 
@@ -58,8 +68,6 @@ const PatientList = () => {
     },
     { label: "Patients List", class: "text-[#2E37A4]" },
   ];
-
- 
 
   return (
     <div>
