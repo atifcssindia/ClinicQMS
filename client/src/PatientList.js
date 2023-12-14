@@ -53,7 +53,7 @@ const PatientList = () => {
       Cell: ({ value }) => {
         // Check if the city is "Indore"
 
-        return <span className=""> {moment(value).format("DD/MM/YYYY")}</span>;
+        return <span className=""> {moment(value).format("MMM DD")}</span>;
       },
     },
     // Add more columns as needed
