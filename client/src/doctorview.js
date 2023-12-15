@@ -169,7 +169,6 @@ const DoctorView = () => {
       accessor: "checkin", // This can be a dummy accessor since the actual functionality will be in the Cell
       Cell: ({ row }) => {
         // Check if the status of the patient is 'waiting'
-
         if (row.original.status === "Waiting") {
           // Render the check-in button
           return (

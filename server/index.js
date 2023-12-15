@@ -28,10 +28,29 @@ const port = process.env.PORT || 5001;
 const { createServer } = require("http");
 const { Server } = require("socket.io");
 const axios = require("axios");
+const path = require("path");
 
 require("dotenv").config();
 
+// const __dirname = path.dirname("")
+const buildPath = path.join(__dirname, "../client/build");
+
+app.use(express.static(buildPath));
+
+app.get("/*", function (req, res) {
+  // console.log(path.join(__dirname, "../client/build/index.html"));
+  res.sendFile(
+    path.join(__dirname, "../client/build/index.html"),
+    function (err) {
+      if (err) {
+        res.status(500).send(err);
+      }
+    }
+  );
+});
+
 const corsOptions = {
+  // origin: "*",
   origin: [
     "http://localhost:3000",
     "https://thriving-bonbon-27d691.netlify.app",
@@ -122,15 +141,15 @@ const generateOTP = () => {
 
 app.post("/generateOTP", async (req, res) => {
   const { phoneNumber } = req.body;
-  const otp = generateOTP();
-  // const otp = 1234;
+  // const otp = generateOTP();
+  const otp = 1234;
 
   try {
     await storeOTP(phoneNumber, otp);
     // Send OTP via SMS
-    const url = `http://control.yourbulksms.com/api/sendhttp.php?authkey=39306c4031323332303650&mobiles=91${phoneNumber}&message=OTP ${otp} ERP login : VITALX EVOKES&sender=URBLKM&route=2&country=91&DLT_TE_ID=1707169641090797992`;
-    const response = await axios.get(url);
-    console.log(response.data); // Log the response from the SMS service for debugging
+    // const url=`http://control.yourbulksms.com/api/sendhttp.php?authkey=39306c4031323332303650&mobiles=91${phoneNumber}&message=OTP ${otp} ERP login : VITALX EVOKES&sender=URBLKM&route=2&country=91&DLT_TE_ID=1707169641090797992`;
+    // const response = await axios.get(url);
+    // console.log(response.data); // Log the response from the SMS service for debugging
     res.json({ success: true, message: "OTP sent successfully." });
   } catch (error) {
     console.error(error);
@@ -377,9 +396,9 @@ app.post("/appointments/next", async (req, res) => {
   }
 });
 
-app.get("/", (req, res) => {
-  res.send("Hello, VitalX!");
-});
+// app.get('/', (req, res) => {
+//   res.send('Hello, VitalX!');
+// });
 
 app.get("/appointments/today", async (req, res) => {
   const userId = req.query.userId; // Assuming you pass doctorId as a query parameter
