@@ -365,6 +365,7 @@ const PatientRegistrationForm = () => {
                 </>
               )}
               {otpVerified && (
+                <>
                 <form onSubmit={handleSubmit}>
                   <InputComponent
                     label="Name"
@@ -414,6 +415,31 @@ const PatientRegistrationForm = () => {
                     Register
                   </button>
                 </form>
+                {appointmentNumber && (
+                  <Card style={{ marginTop: 20 }}>
+                    <CardContent>
+                      <Typography variant="h5" component="div">
+                        Appointment Number
+                      </Typography>
+                      <Typography variant="h4" color="primary">
+                        {appointmentNumber}
+                      </Typography>
+                      <Typography variant="body2">
+                        Please wait for your turn.
+                      </Typography>
+                    </CardContent>
+                  </Card>
+                )}
+                {peopleAhead != null && (
+                  <Typography variant="body2">
+                    {peopleAhead === 0 ? (
+                      "Your turn is coming up next!"
+                    ) : (
+                      `${peopleAhead} people ahead of you.`
+                    )}
+                  </Typography>
+                )}
+                </>
               )}
 </>
             ) : (
