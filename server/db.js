@@ -271,14 +271,17 @@ const updateAppointmentStatuses = async (doctorId) => {
   await pool.query('BEGIN'); // Start a transaction
 
   try {
+    // Get the current date in a format compatible with your database
+    const currentDate = new Date().toISOString().split('T')[0];
+
     // Set the status of the currently being treated appointment to treated (2)
     await pool.query(
       `UPDATE appointment SET status = 2 
       WHERE appointment_id = (
         SELECT appointment_id FROM appointment
-        WHERE doctor_id = $1 AND status = 1
+        WHERE doctor_id = $1 AND status = 1 AND date_time::date = $2
         ORDER BY date_time ASC LIMIT 1
-      )`, [doctorId]
+      )`, [doctorId, currentDate]
     );
 
     // Set the status of the next appointment in the queue to being treated (1)
@@ -286,9 +289,9 @@ const updateAppointmentStatuses = async (doctorId) => {
       `UPDATE appointment SET status = 1 
       WHERE appointment_id = (
         SELECT appointment_id FROM appointment
-        WHERE doctor_id = $1 AND status = 0
+        WHERE doctor_id = $1 AND status = 0 AND date_time::date = $2
         ORDER BY date_time ASC LIMIT 1
-      ) RETURNING appointment_id`, [doctorId]
+      ) RETURNING appointment_id`, [doctorId, currentDate]
     );
 
     await pool.query('COMMIT'); // Commit the transaction if successful
@@ -300,6 +303,7 @@ const updateAppointmentStatuses = async (doctorId) => {
     throw err; // Re-throw the error to be handled in the route
   }
 };
+
 
 
 
