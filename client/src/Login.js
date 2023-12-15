@@ -153,7 +153,7 @@ const Login = () => {
             alt=""
           />
           <div className=" relative overflow-hidden">
-            <img src="images/new_vitalX_logo.svg" className=" w-4/12" />
+            <img src="images/new_vitalX_logo.svg" className=" w-4/12" alt=""/>
           </div>
 
           <div>
