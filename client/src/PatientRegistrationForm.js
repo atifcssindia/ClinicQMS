@@ -20,7 +20,7 @@ const PatientRegistrationForm = () => {
   const [registrationCompleted, setRegistrationCompleted] = useState(false); // New state
   const [otpSent, setOtpSent] = useState(false);
   const [otp, setOtp] = useState("");
-  // const [patientDetails, setPatientDetails] = useState("");
+  const [skipOtp, setSkipOtp] = useState(false);
   const [otpVerified, setOtpVerified] = useState(false);
   const [errorMessage, setErrorMessage] = useState(""); // New state for error messages
 
@@ -30,6 +30,31 @@ const PatientRegistrationForm = () => {
     const query = new URLSearchParams(window.location.search);
     const doctorId = query.get("doctorId");
     setDoctorId(doctorId);
+
+    const storedAppointmentNumber = localStorage.getItem('appointmentNumber');
+    const storedPeopleAhead = localStorage.getItem('peopleAhead');
+    const storedTimestamp = localStorage.getItem('timestamp');
+    const currentTime = new Date().getTime();
+
+    const isDataExpired = storedTimestamp && (currentTime - storedTimestamp) > 6 * 60 * 60 * 1000;
+
+    if (storedAppointmentNumber && !isDataExpired) {
+      setAppointmentNumber(storedAppointmentNumber);
+      setSkipOtp(true);
+    }
+  
+    if (storedPeopleAhead && !isDataExpired) {
+      setPeopleAhead(storedPeopleAhead);
+      setSkipOtp(true);
+    }
+  
+    if (isDataExpired) {
+      // Clear expired data
+      localStorage.removeItem('appointmentNumber');
+      localStorage.removeItem('peopleAhead');
+      localStorage.removeItem('timestamp');
+    }
+
   }, []);
 
   useEffect(() => {
@@ -132,10 +157,15 @@ const PatientRegistrationForm = () => {
 
       if (response.ok) {
         const data = await response.json();
+        const currentTime = new Date().getTime();
         setAppointmentNumber(data.appointment.appointment_number); // Set the appointment number here
         setPeopleAhead(data.peopleAhead);
         setRegistrationCompleted(true);
-        console.log("Registration successful:", data);
+
+        localStorage.setItem('appointmentNumber', data.appointment.appointment_number);
+        localStorage.setItem('peopleAhead', data.peopleAhead);
+        localStorage.setItem('timestamp', currentTime);
+
         // Additional logic upon successful registration, like redirecting or showing a success message
       } else {
         // Handle server errors (response not OK)
@@ -246,9 +276,6 @@ const PatientRegistrationForm = () => {
     <div className="app-layout-blank flex flex-auto flex-col h-[100vh] max-h-auto">
       <div className="flex h-full">
         <div
-          // style={{
-          //   backgroundImage: `url("images/intro.png")`,
-          // }}
           className="bg-no-repeat bg-cover py-6 px-16 flex-col justify-between hidden lg:flex  relative bg-[#2E37A4]  w-full xl:w-5/12"
         >
           <img
@@ -264,13 +291,6 @@ const PatientRegistrationForm = () => {
           <div className="logo text-5xl text-white">VitalX</div>
 
           <div>
-            {/* <div className="mb-6 flex items-center gap-4">
-              <span className="avatar avatar-circle avatar-md border-2 border-white"></span>
-              <div className="text-white">
-                <div className="font-semibold text-base">Brittany Hale</div>
-                <span className="opacity-80">CTO, Onward</span>
-              </div>
-            </div> */}
             <p className="text-lg text-white opacity-80">
               Transform your clinic with digital efficiency in under 30 minutes.
             </p>
@@ -282,8 +302,11 @@ const PatientRegistrationForm = () => {
             <div className=" bg-white  px-14 py-12  rounded-2xl">
               <div className="mb-8">
                 <h3 className="mb-1 text-xl font-bold">Hello Patient</h3>
-                <p className="text-gray-600">Please enter your details</p>
+                {/* <p className="text-gray-600">Please enter your details</p> */}
               </div>
+              {!skipOtp ? (
+              // If skipOtp is false, show the OTP section
+              <>
               {!otpSent && (
                 <>
                   <div className=" inline-flex flex-col w-full relative  mb-6">
@@ -310,20 +333,6 @@ const PatientRegistrationForm = () => {
                   >
                     Send OTP
                   </button>
-
-                  {/* <div className="flex">
-                    <div className=" w-8/12">
-                      <TextField
-                        label="Phone Number"
-                        value={contactNumber}
-                        onChange={handleContactNumberChange}
-                        className=" w-full"
-                      />
-                    </div>
-                    <div className=" w-4/12 text-center  self-center">
-                      <Button onClick={handleSendOtp}>Send OTP</Button>
-                    </div>
-                  </div> */}
                 </>
               )}
               {otpSent && !otpVerified && (
@@ -352,18 +361,7 @@ const PatientRegistrationForm = () => {
                   >
                     Verify OTP
                   </button>
-                  {/* <div className="flex">
-                    <div className=" w-8/12">
-                      <TextField
-                        label="Enter OTP"
-                        value={otp}
-                        onChange={(e) => setOtp(e.target.value)}
-                      />
-                    </div>
-                    <div className=" w-4/12 text-center  self-center">
-                      <Button onClick={handleVerifyOtp}>Verify OTP</Button>
-                    </div>
-                  </div> */}
+               
                 </>
               )}
               {otpVerified && (
@@ -415,66 +413,12 @@ const PatientRegistrationForm = () => {
                   >
                     Register
                   </button>
-
-                  {/* <TextField
-                      label="Name"
-                      variant="outlined"
-                      fullWidth
-                      margin="normal"
-                      value={name}
-                      onChange={handleNameChange}
-                    />
-                    <TextField
-                      label="Age"
-                      variant="outlined"
-                      fullWidth
-                      margin="normal"
-                      value={age}
-                      onChange={handleAgeChange}
-                    />
-                    <TextField
-                      label="Weight"
-                      variant="outlined"
-                      fullWidth
-                      margin="normal"
-                      value={weight}
-                      onChange={handleWeightChange}
-                    />
-                    <TextField
-                      label="ContactNumber"
-                      variant="outlined"
-                      fullWidth
-                      margin="normal"
-                      value={contactNumber}
-                      onChange={handleContactNumberChange}
-                    />
-                    <TextField
-                      select
-                      label="Gender"
-                      value={gender}
-                      onChange={handleGenderChange}
-                      margin="normal"
-                      fullWidth
-                      SelectProps={{
-                        native: true,
-                      }}
-                    >
-                      <option value=""></option>
-                      <option value="M">Male</option>
-                      <option value="F">Female</option>
-                      <option value="O">Other</option>
-                    </TextField>
-                    <Button
-                      type="submit"
-                      variant="contained"
-                      color="primary"
-                      disabled={isRegistering || registrationCompleted}
-                    >
-                      Register
-                    </Button> */}
                 </form>
               )}
-
+</>
+            ) : (
+              // If skipOtp is true, show the details form and appointment info
+              <>
               {appointmentNumber && (
                 <Card style={{ marginTop: 20 }}>
                   <CardContent>
@@ -498,6 +442,8 @@ const PatientRegistrationForm = () => {
                     `${peopleAhead} people ahead of you.`
                   )}
                 </Typography>
+              )}
+              </>
               )}
             </div>
           </div>

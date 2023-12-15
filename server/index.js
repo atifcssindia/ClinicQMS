@@ -96,15 +96,15 @@ const generateOTP = () => {
 
 app.post('/generateOTP', async (req, res) => {
   const { phoneNumber } = req.body;
-  const otp = generateOTP();
-  // const otp = 1234;
+  // const otp = generateOTP();
+  const otp = 1234;
 
   try {
     await storeOTP(phoneNumber, otp);
     // Send OTP via SMS
-    const url=`http://control.yourbulksms.com/api/sendhttp.php?authkey=39306c4031323332303650&mobiles=91${phoneNumber}&message=OTP ${otp} ERP login : VITALX EVOKES&sender=URBLKM&route=2&country=91&DLT_TE_ID=1707169641090797992`;
-    const response = await axios.get(url);
-    console.log(response.data); // Log the response from the SMS service for debugging
+    // const url=`http://control.yourbulksms.com/api/sendhttp.php?authkey=39306c4031323332303650&mobiles=91${phoneNumber}&message=OTP ${otp} ERP login : VITALX EVOKES&sender=URBLKM&route=2&country=91&DLT_TE_ID=1707169641090797992`;
+    // const response = await axios.get(url);
+    // console.log(response.data); // Log the response from the SMS service for debugging
     res.json({ success: true, message: "OTP sent successfully." });
   } catch (error) {
     console.error(error);
