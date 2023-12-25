@@ -5,6 +5,8 @@ import { io } from "socket.io-client";
 import AdminLayout from "./AdminLayout";
 import MyTable from "./components/MyTable";
 import MyBreakcrumbs from "./components/MyBreadcrumbs";
+import { FaHome, FaUser } from "react-icons/fa";
+import { LuCalendarDays } from "react-icons/lu";
 
 const DoctorView = () => {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
@@ -188,13 +190,10 @@ const DoctorView = () => {
   ];
 
   const breadcrumbs = [
-    {
-      label: "Home",
-      href: "#",
+    { href: "#", label: "Home", icon: FaHome },
+    { label: "Appointments List", icon: LuCalendarDays },
 
-      class: "text-[#2E37A4]",
-    },
-    { label: "Appointments List", class: "text-[#2E37A4]" },
+    // Add more items as needed
   ];
 
   //

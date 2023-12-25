@@ -1,7 +1,7 @@
 import * as React from "react";
 import Breadcrumbs from "@mui/material/Breadcrumbs";
 import Stack from "@mui/material/Stack";
-import { Link, Typography } from "@mui/material";
+import { Link, ListItemIcon, Typography } from "@mui/material";
 
 export default function MyBreakcrumbs({ data }) {
   return (
@@ -26,12 +26,23 @@ export default function MyBreakcrumbs({ data }) {
 }
 
 function StyledBreadcrumb(props) {
-  const { component: Component = Link, href, label, ...other } = props;
+  const {
+    component: Component = Link,
+    href,
+    label,
+    icon: Icon,
+    ...other
+  } = props;
 
   return (
-    <Typography component="div">
-      <Component href={href} {...other}>
-        {label}
+    <Typography component="div" className="flex items-center">
+      <Component href={href} {...other} className=" inline-flex items-center">
+        {Icon && (
+          <ListItemIcon className="mr-1 !min-w-[25px] text-xl  ">
+            <Icon />
+          </ListItemIcon>
+        )}
+        <span className="hidden md:inline text-sm">{label}</span>
       </Component>
     </Typography>
   );

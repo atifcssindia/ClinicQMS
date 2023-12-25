@@ -142,19 +142,21 @@ const Registration = () => {
           // style={{
           //   backgroundImage: `url("images/intro.png")`,
           // }}
-          className="bg-no-repeat bg-cover py-6 px-16 flex-col justify-between hidden lg:flex  relative bg-[#2E37A4] w-full xl:w-5/12"
+          className="bg-no-repeat bg-cover py-6 px-16 flex-col justify-between hidden lg:flex  relative bg-gradient-to-t from-[#2E37A4] from-5% via-[#81bbf5] via-30% to-white to-80% w-full xl:w-5/12 drop-shadow"
         >
           <img
             src="images/pattern.png"
-            className=" absolute  z-0 left-0"
+            className=" absolute  z-0 left-0 bottom-0 opacity-100 w-full h-full"
             alt=""
           />
           <img
             src="images/login-02.png"
-            className=" absolute  z-0 left-0"
+            className=" absolute  z-0 left-0 bottom-0"
             alt=""
           />
-          <div className="logo text-5xl text-white">VitalX</div>
+          <div className=" relative overflow-hidden">
+            <img src="images/new_vitalX_logo.svg" className=" w-4/12" alt="" />
+          </div>
 
           <div>
             {/* <div className="mb-6 flex items-center gap-4">

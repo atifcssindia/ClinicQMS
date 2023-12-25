@@ -3,6 +3,9 @@ import { jwtDecode } from "jwt-decode";
 import AdminLayout from "./AdminLayout";
 import MyBreakcrumbs from "./components/MyBreadcrumbs";
 import MyTable from "./components/MyTable";
+import { FaHome, FaUser } from "react-icons/fa"; // Import the desired icons from react-icons
+import { FaUsers } from "react-icons/fa";
+
 import * as moment from "moment";
 const PatientList = () => {
   const [patients, setPatients] = useState([]);
@@ -60,13 +63,10 @@ const PatientList = () => {
   ];
 
   const breadcrumbs = [
-    {
-      label: "Home",
-      href: "#",
+    { href: "/", label: "Home", icon: FaHome },
+    { label: "Patients List", icon: FaUsers },
 
-      class: "text-[#2E37A4]",
-    },
-    { label: "Patients List", class: "text-[#2E37A4]" },
+    // Add more items as needed
   ];
 
   return (
